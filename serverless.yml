@@ -40,8 +40,8 @@ package:
     - ".#*"
 
 functions:
-  myfunc:
+  hello:
     memory: 128
-    handler: handler.entry
+    handler: handler.hello
     events:
-      - http: POST /
+      - http: POST /hello
