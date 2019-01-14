@@ -1,0 +1,50 @@
+service: mypythonservice
+
+plugins:
+  - serverless-python-requirements
+  - serverless-pseudo-parameters
+  # - serverless-domain-manager
+
+custom:
+  # wsgi:
+    # app: smsgw.app
+    # packRequirements: false
+  pythonRequirements:
+    dockerizePip: false
+    slim: true
+    noDeploy:
+      - psycopg2
+      - boto3
+      - botocore
+      - docutils
+  # customDomain:
+    # domainName: inixy-api.jetbridge.com
+    # stage: ${self:provider.stage}
+    # createRoute53Record: true
+
+
+provider:
+  name: aws
+  runtime: python3.7
+  stage: ${opt:stage, 'dev'}
+  region: eu-central-1
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action: secretsmanager:GetSecretValue
+      Resource: "arn:aws:secretsmanager:#{AWS::Region}:#{AWS::AccountId}:secret:inixy/sms/*"
+
+package:
+  # don't deploy modules used for development
+  exclude:
+    - node_modules/**
+    - venv/**
+    - '**/__pycache__/**'
+    - ".#*"
+
+functions:
+  myfunc:
+    memory: 128
+    handler: handler.entry
+    events:
+      - http: POST /
