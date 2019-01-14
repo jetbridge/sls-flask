@@ -6,9 +6,6 @@ plugins:
   # - serverless-domain-manager
 
 custom:
-  # wsgi:
-    # app: smsgw.app
-    # packRequirements: false
   pythonRequirements:
     dockerizePip: false
     slim: true
@@ -32,7 +29,7 @@ provider:
   iamRoleStatements:
     - Effect: Allow
       Action: secretsmanager:GetSecretValue
-      Resource: "arn:aws:secretsmanager:#{AWS::Region}:#{AWS::AccountId}:secret:inixy/sms/*"
+      Resource: "arn:aws:secretsmanager:#{AWS::Region}:#{AWS::AccountId}:secret:myservice/*"
 
 package:
   # don't deploy modules used for development
