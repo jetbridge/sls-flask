@@ -41,7 +41,7 @@ package:
 
 functions:
   hello:
-    memory: 128
+    memorySize: 128
     handler: handler.hello
     events:
       - http: POST /hello
