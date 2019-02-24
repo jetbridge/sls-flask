@@ -10,9 +10,6 @@ custom:
     slim: true
     noDeploy:
       - psycopg2
-      - boto3
-      - botocore
-      - docutils
 
 provider:
   name: aws
