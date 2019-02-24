@@ -3,7 +3,6 @@ service: mypythonservice
 plugins:
   - serverless-python-requirements
   - serverless-pseudo-parameters
-  # - serverless-domain-manager
 
 custom:
   pythonRequirements:
@@ -14,11 +13,6 @@ custom:
       - boto3
       - botocore
       - docutils
-  # customDomain:
-    # domainName: inixy-api.jetbridge.com
-    # stage: ${self:provider.stage}
-    # createRoute53Record: true
-
 
 provider:
   name: aws
@@ -32,7 +26,6 @@ provider:
       Resource: "arn:aws:secretsmanager:#{AWS::Region}:#{AWS::AccountId}:secret:myservice/*"
 
 package:
-  # don't deploy modules used for development
   exclude:
     - node_modules/**
     - venv/**
