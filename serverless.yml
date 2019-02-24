@@ -8,6 +8,8 @@ custom:
   pythonRequirements:
     dockerizePip: false
     slim: true
+    useDownloadCache: true
+    useStaticCache: true
     noDeploy:
       - psycopg2
 
