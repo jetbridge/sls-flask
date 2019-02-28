@@ -1,8 +1,8 @@
 {
   "dependencies": {
-    "serverless-python-requirements": "^4.2.5"
   },
   "devDependencies": {
-    "serverless-pseudo-parameters": "^2.4.0"
+      "serverless-python-requirements": "latest",
+      "serverless-pseudo-parameters": "latest"
   }
 }
