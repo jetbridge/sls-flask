@@ -36,7 +36,7 @@ mypy_extensions = ">=0.4.1"
 Faker = "*"
 
 [requires]
-python_version = "3.7.1"
+python_version = "3.7"
 
 [pipenv]
 allow_prereleases = true
