@@ -1,8 +1,8 @@
 .PHONY: init migrate all-tests lint test db migrate rev
 
 init:
-	@bash script/initialize_project.sh
 	yarn
+	@bash script/initialize_project.sh
 
 db:
 	flask db
