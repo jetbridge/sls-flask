@@ -17,6 +17,7 @@ Flask-Script = "*"
 marshmallow = "==3.0.0rc4"
 flask-rest-api = "*"
 apispec = "*"
+marshmallow-sqlalchemy = "*"
 
 [dev-packages]
 "flake8" = "*"
