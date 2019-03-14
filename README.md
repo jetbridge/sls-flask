@@ -8,9 +8,9 @@ Comes with a lot of useful stuff ready to go.
   * Swagger UI
   * Redoc
 * [Pytest using database subtransactions](https://pypi.org/project/pytest-flask-sqlalchemy/) for test isolation
-* Flake8 with Mypy for type-checking
+* Flake8 with [Mypy](http://mypy-lang.org/) for type-checking
 * AWS Lambda integration
-  * [Serverless](https://serverless.com/)
+  * [Serverless AWS](https://serverless.com/framework/docs/providers/aws/)
   * Load Flask config from AWS Secrets Manager
 * [Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/) for DB migrations with alembic and Flask CLI
 * [Pipenv](https://pipenv.readthedocs.io/en/latest/) for dependency management
@@ -35,6 +35,7 @@ sls deploy  # deploy serverless app
 ```
 
 ### API Documentation:
+Once your flask dev server is running:
 * [OpenAPI JSON](http://localhost:5000/api/openapi.json)
 * [Swagger UI](http://localhost:5000/api/swagger)
 * [ReDoc](http://localhost:5000/api/doc)
