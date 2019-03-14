@@ -33,3 +33,8 @@ flask run --reload  # run flask dev server
 sls wsgi serve  # run flask server under serverless
 sls deploy  # deploy serverless app
 ```
+
+### API Documentation:
+* [OpenAPI JSON](http://localhost:5000/api/openapi.json)
+* [Swagger UI](http://localhost:5000/api/swagger)
+* [ReDoc](http://localhost:5000/api/doc)

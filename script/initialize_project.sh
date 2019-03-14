@@ -12,7 +12,6 @@ find TEMPLATE -type f -exec $subst {} \;
 $subst serverless.yml package.json app.py
 
 mv TEMPLATE $name
-echo " ---- "
 echo ""
 echo "Project $name ready!"
 echo ""
