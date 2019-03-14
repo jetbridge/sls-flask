@@ -13,12 +13,13 @@ subst serverless.yml
 subst package.json
 
 mv TEMPLATE $name
+echo " ---- "
+echo ""
 echo "Project $name ready!"
+echo ""
 echo "Next steps:"
 echo "  pipenv shell"
 echo "  flask run --reload"
-echo "-or- "
-echo "  sls wsgi serve"
 echo ""
 echo "To deploy:"
 echo "  sls deploy"
