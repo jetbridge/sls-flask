@@ -2,6 +2,7 @@
 
 init:
 	yarn
+	pipenv install
 	@bash script/initialize_project.sh
 
 db:
