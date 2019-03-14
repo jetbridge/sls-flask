@@ -8,7 +8,7 @@ plugins:
 custom:
   stackName: ${self:service}-${self:provider.stage}
   wsgi:
-    app: inixy.app.app  # flask WSGI handler
+    app: app.app
     packRequirements: false
   pythonRequirements:
     dockerizePip: false
@@ -42,10 +42,10 @@ package:
 
 functions:
   app:  # main flask entry point
-    handler: wsgi.handler  # using WSGI (serverless-wsgi plugin)
+    handler: wsgi_handler.handler
     events:
       - http: ANY /
-      - http: 'ANY {proxy+}'  # lambda proxy - capture all http requests and do routing in flask
+      - http: 'ANY {proxy+}'
     memorySize: 512
     layers:
       - arn:aws:lambda:eu-central-1:898466741470:layer:psycopg2:1  # psycopg is needed for sqlalchemy
