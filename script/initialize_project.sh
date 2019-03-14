@@ -1,6 +1,7 @@
 #!/bin/bash -e
 
-read -p "What is the name of your app? (lowercase): " name
+# read -p "What is the name of your app? (lowercase): " name
+name=basename $PWD
 
 if [[ -z "$name" ]]; then exit 1; fi
 
