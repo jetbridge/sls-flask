@@ -5,13 +5,11 @@ name=`basename $PWD`
 
 if [[ -z "$name" ]]; then exit 1; fi
 
-alias subst="perl -i -pe s/TEMPLATE/$name/"
+subst="perl -i -pe s/TEMPLATE/$name/"
 
 # replace TEMPLATE in files
-find TEMPLATE -type f -exec subst {} \;
-subst serverless.yml
-subst package.json
-subst app.py
+find TEMPLATE -type f -exec $subst {} \;
+$subst serverless.yml package.json app.py
 
 mv TEMPLATE $name
 echo " ---- "
