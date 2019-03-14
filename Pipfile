@@ -5,8 +5,37 @@ name = "pypi"
 
 [packages]
 "boto3" = "*"
+psycopg2 = "*"
+marshmallow-enum = "*"
+Flask = "*"
+Flask-Cors = "*"
+Flask-SQLAlchemy = "*"
+SQLAlchemy = "*"
+Werkzeug = "*"
+Flask-Migrate = ">=2.3.1"
+Flask-Script = "*"
+marshmallow = "==3.0.0rc4"
+flask-rest-api = "*"
+apispec = "*"
 
 [dev-packages]
+"flake8" = "*"
+pytest = "*"
+mypy = "*"
+"flake8-mypy" = {ref = "27f1888d7e6766d1b4357cb7a2ecede4bc95b281", git = "https://github.com/jetbridge/flake8-mypy.git"}
+importmagic = "*"
+epc = "*"
+pytest-xdist = "*"
+watchdog = "*"
+pytest-flask-sqlalchemy = "*"
+pytest-postgresql = "*"
+pudb = "*"
+ipdb = "*"
+mypy_extensions = ">=0.4.1"
+Faker = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.7.1"
+
+[pipenv]
+allow_prereleases = true
