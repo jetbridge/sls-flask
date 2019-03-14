@@ -1,10 +1,15 @@
-service: mypythonservice
+service: TEMPLATE
 
 plugins:
   - serverless-python-requirements
   - serverless-pseudo-parameters
+  - serverless-wsgi
 
 custom:
+  stackName: ${self:service}-${self:provider.stage}
+  wsgi:
+    app: inixy.app.app  # flask WSGI handler
+    packRequirements: false
   pythonRequirements:
     dockerizePip: false
     slim: true
@@ -12,6 +17,9 @@ custom:
     useStaticCache: true
     noDeploy:
       - psycopg2
+      - boto3
+      - botocore
+      - docutils
 
 provider:
   name: aws
@@ -22,7 +30,8 @@ provider:
   iamRoleStatements:
     - Effect: Allow
       Action: secretsmanager:GetSecretValue
-      Resource: "arn:aws:secretsmanager:#{AWS::Region}:#{AWS::AccountId}:secret:myservice/*"
+      Resource:
+        - "arn:aws:secretsmanager:#{AWS::Region}:#{AWS::AccountId}:secret:TEMPLATE/${self:provider.stage}*"
 
 package:
   exclude:
@@ -32,8 +41,11 @@ package:
     - ".#*"
 
 functions:
-  hello:
-    memorySize: 128
-    handler: handler.hello
+  app:  # main flask entry point
+    handler: wsgi.handler  # using WSGI (serverless-wsgi plugin)
     events:
-      - http: POST /hello
+      - http: ANY /
+      - http: 'ANY {proxy+}'  # lambda proxy - capture all http requests and do routing in flask
+    memorySize: 512
+    layers:
+      - arn:aws:lambda:eu-central-1:898466741470:layer:psycopg2:1  # psycopg is needed for sqlalchemy

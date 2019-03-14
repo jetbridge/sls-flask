@@ -15,7 +15,13 @@ Comes with a lot of useful stuff ready to go.
 * [Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/) for DB migrations with alembic and Flask CLI
 * [Pipenv](https://pipenv.readthedocs.io/en/latest/) for dependency management
 
-## Start a new flask serverless project:
+
+## Quickstart:
+
+### Prerequisites:
+`brew install pipenv yarn`
+
+### Start your project:
 ```
 sls install --url https://github.com/revmischa/slspy --name myapp
 cd myapp

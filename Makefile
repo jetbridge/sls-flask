@@ -2,7 +2,7 @@
 
 init:
 	@bash script/initialize_project.sh
-
+	yarn
 
 db:
 	flask db
