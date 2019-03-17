@@ -3,7 +3,7 @@ import sqlalchemy as sa
 from faker import Faker
 from pytest_postgresql.factories import drop_postgresql_database, init_postgresql_database
 import pytest
-from TEMPLATE import create_app
+from TEMPLATE.create_app import create_app
 
 
 # for faker
@@ -46,26 +46,14 @@ def app(database):
 
 
 @pytest.fixture(scope='session')
-def _db(app, db_fixtures_factory):
+def _db(app):
     """Provide the transactional fixtures with access to the database via a Flask-SQLAlchemy database connection."""
     db = app.db
 
     # create all tables for test DB
     db.create_all()
 
-    # insert base test data
-    db_fixtures_factory(db)
-
     return db
-
-
-@pytest.fixture(scope='session')
-def db_fixtures_factory():
-    def insert_fixtures(db):
-        # db_session = db.session
-        # TODO: insert fixtures
-        pass
-    return insert_fixtures
 
 
 @pytest.fixture
