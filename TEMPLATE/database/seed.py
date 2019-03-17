@@ -1,3 +1,4 @@
+"""Create fake models for tests and seeding dev DB."""
 from . import db
 from faker import Factory as FakerFactory
 import factory  # noqa: F401
