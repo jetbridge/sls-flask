@@ -1,7 +1,7 @@
 from . import db
-import factory
-from pytest_factoryboy import register
 from faker import Factory as FakerFactory
+import factory  # noqa: F401
+from pytest_factoryboy import register  # noqa: F401
 
 
 faker: FakerFactory = FakerFactory.create()
