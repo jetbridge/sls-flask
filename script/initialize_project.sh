@@ -9,7 +9,7 @@ subst="perl -i -pe s/TEMPLATE/$name/g"
 
 # replace TEMPLATE in files
 find TEMPLATE -type f -exec $subst {} \;
-$subst serverless.yml package.json app.py tox.ini
+$subst serverless.yml package.json app.py tox.ini README.md
 
 mv TEMPLATE $name
 echo ""

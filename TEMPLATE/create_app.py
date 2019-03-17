@@ -12,6 +12,7 @@ from .secret import get_secret
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 from .api import api
+from .commands import init_cli
 
 
 log = logging.getLogger(__name__)
@@ -36,9 +37,10 @@ def create_app(test_config=None) -> App:
     app.migrate = Migrate(app, db)  # alembic
     api.init_app(app)  # flask-rest-api
 
-    # scripts
+    # CLI
     manager = Manager(app)
     manager.add_command('db', MigrateCommand)  # migrations under "flask db"
+    init_cli(app, manager)
 
     load_views(app)
 

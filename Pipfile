@@ -18,6 +18,7 @@ marshmallow = "==3.0.0rc4"
 flask-rest-api = "*"
 apispec = "*"
 marshmallow-sqlalchemy = "*"
+pytest-factoryboy = "*"
 
 [dev-packages]
 "flake8" = "*"
