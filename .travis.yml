@@ -8,5 +8,9 @@ services:
 before_script:
   - createdb TEMPLATE
 
+install:
+  - pip install pipenv
+  - pipenv install --dev
+
 script:
   - pipenv run pytest
