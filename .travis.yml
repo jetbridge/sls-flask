@@ -6,3 +6,6 @@ services:
 
 before_script:
   - createdb TEMPLATE
+
+script:
+  - pytest
