@@ -20,3 +20,7 @@ install:
 script:
   - pipenv run pytest
   - pipenv run flake8
+
+cache:
+  directories:
+    - ".venv"
