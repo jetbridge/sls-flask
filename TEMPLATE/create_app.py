@@ -55,14 +55,14 @@ def load_views(self):
         api.register_blueprint(blp)
 
 
-def configure(app: App, test_config=None):
+def configure_class(app):
     config_class = os.getenv('TEMPLATE_CONFIG'.upper())
 
     if not config_class:
         # figure out which config to load
         if os.getenv('AWS_EXECUTION_ENV'):
             # running in AWS
-            stage = os.environ['STAGE']
+            stage = os.getenv('STAGE')
             if stage == 'prod':
                 config_class = 'TEMPLATE.config.ProdConfig'
             else:
@@ -73,6 +73,8 @@ def configure(app: App, test_config=None):
 
     app.config.from_object(config_class)
 
+
+def configure_secrets(app):
     if app.config.get('LOAD_SECRETS'):
         # fetch config secrets from Secrets Manager
         secret_name = app.config['SECRET_NAME']
@@ -83,14 +85,24 @@ def configure(app: App, test_config=None):
         else:
             log.debug("Failed to load secrets")
 
-    if test_config:
-        app.config.update(test_config)
 
+def configure_instance(app):
     # ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)
     except OSError:
         pass
+    # load 'instance/app.cfg' if it exists as our local instance configuration override
+    app.config.from_pyfile('app.cfg', silent=True)
+
+
+def configure(app: App, test_config=None):
+    configure_class(app)
+    if test_config:
+        app.config.update(test_config)
+    else:
+        configure_secrets(app)
+        configure_instance(app)
 
     if app.config.get("DUMP_SQL"):
         print("Enabling query logging")

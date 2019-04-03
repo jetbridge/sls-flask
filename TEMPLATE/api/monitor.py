@@ -1,3 +1,4 @@
+"""Monitoring endpoints."""
 from flask_rest_api import Blueprint
 from flask.views import MethodView
 from marshmallow import fields as f, Schema
@@ -6,23 +7,19 @@ from TEMPLATE.database import db
 
 
 blp = Blueprint(
-    'monitoring', __name__,
-    url_prefix='/api',
-    description='Site Monitoring'
+    'Monitoring',
+    __name__,
+    url_prefix='/api/monitoring',
 )
 
 
-@api.definition('Monitoring')
+@api.definition('Health Check')
 class MonitoringSchema(Schema):
-    class Meta:
-        strict = True
-
     ok = f.Boolean(dump_only=True)
 
 
-@blp.route('/monitoring')
-class Monitorings(MethodView):
-
+@blp.route('')
+class Monitoring(MethodView):
     @blp.response(MonitoringSchema())
     def get(self):
         """Check if site and DB are up."""

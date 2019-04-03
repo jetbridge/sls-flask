@@ -1,0 +1,5 @@
+--ignore-dir=node_modules/
+--ignore-dir=.serverless/
+--ignore-dir=.git/
+--ignore-dir=__pycache__
+--color

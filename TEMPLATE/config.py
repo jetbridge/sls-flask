@@ -24,6 +24,21 @@ class Config:
     OPENAPI_REDOC_PATH = '/doc'
     OPENAPI_SWAGGER_UI_PATH = '/swagger'
     OPENAPI_SWAGGER_UI_VERSION = '3.21.0'
+    # https://swagger.io/docs/specification/authentication/bearer-authentication/
+    API_SPEC_OPTIONS = {
+        'components': {
+            'securitySchemes': {
+                'bearerAuth': {
+                    'type': 'http',
+                    'scheme': 'bearer',
+                    'bearerFormat': 'JWT'
+                },
+            },
+        },
+        'security': {
+        }
+    }
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'INSECURE')
 
 
 class LocalDevConfig(Config):

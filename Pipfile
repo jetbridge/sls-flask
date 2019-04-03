@@ -35,6 +35,9 @@ pudb = "*"
 ipdb = "*"
 mypy_extensions = ">=0.4.1"
 Faker = "*"
+autoflake = "*"
+"python-language-server[all]" = "*"
+yapf = "*"
 
 [requires]
 python_version = "3.7"

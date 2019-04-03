@@ -18,6 +18,8 @@ var/
 
 # Serverless directories
 .serverless
+.serverless-wsgi
 
 __pycache__
 node_modules
+/instance

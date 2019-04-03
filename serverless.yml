@@ -27,6 +27,9 @@ provider:
   stage: ${opt:stage, 'dev'}
   region: eu-central-1
 
+  environment:
+    STAGE: ${self:provider.stage}
+
   iamRoleStatements:
     - Effect: Allow
       Action: secretsmanager:GetSecretValue
@@ -35,6 +38,7 @@ provider:
 
 package:
   exclude:
+    - instance/**
     - node_modules/**
     - venv/**
     - '**/__pycache__/**'
