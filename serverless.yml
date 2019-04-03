@@ -16,7 +16,7 @@ custom:
     useDownloadCache: true
     useStaticCache: true
     noDeploy:
-      - psycopg2
+      - psycopg2  # provided by layer
       - boto3
       - botocore
       - docutils
@@ -52,4 +52,4 @@ functions:
       - http: 'ANY {proxy+}'
     memorySize: 512
     layers:
-      - arn:aws:lambda:eu-central-1:898466741470:layer:psycopg2:1  # psycopg is needed for sqlalchemy
+      - arn:aws:lambda:eu-central-1:898466741470:layer:psycopg2-py37:2  # psycopg2
