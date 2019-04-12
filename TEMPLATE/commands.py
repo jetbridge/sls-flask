@@ -6,6 +6,7 @@ def init_cli(app, manager):
     if app.debug:
         # seed
         from .database.fixtures import seed_db
+
         @app.cli.command('seed', help="Seed DB with test data")
         def seed_db_cmd():
             seed_db()

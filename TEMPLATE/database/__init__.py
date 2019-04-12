@@ -1,11 +1,11 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import DateTime
-from sqlalchemy.orm import Query
 from typing import List, Any, Dict, Optional
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 
 
 db = SQLAlchemy()
+Model = db.Model
 
 TSTZ = DateTime(timezone=True)
 
@@ -21,7 +21,7 @@ class Upsertable():
                    constraint=None,
                    set_: Dict[str, Any],
                    should_return_result=True,
-                   values: Dict[str, Any]) -> Optional[db.Model]:
+                   values: Dict[str, Any]) -> Optional[Model]:
         """Insert or update if index_elements match.
 
         N.B. does not commit.
@@ -53,4 +53,3 @@ class Upsertable():
         assert result
         db.session.commit()
         return result
-
