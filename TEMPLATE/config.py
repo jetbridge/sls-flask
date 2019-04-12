@@ -11,6 +11,8 @@ class Config:
     # this will come from secrets manager when running in AWS
     SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI', 'postgresql:///TEMPLATE')  # use local "TEMPLATE" DB for local dev
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # set this to echo queries to stderr
+    SQLALCHEMY_ECHO = os.getenv('SQL_ECHO', False)
 
     DEBUG = os.getenv('DEBUG', False)
 
@@ -23,7 +25,7 @@ class Config:
     OPENAPI_JSON_PATH = 'openapi.json'
     OPENAPI_REDOC_PATH = '/doc'
     OPENAPI_SWAGGER_UI_PATH = '/swagger'
-    OPENAPI_SWAGGER_UI_VERSION = '3.21.0'
+    OPENAPI_SWAGGER_UI_VERSION = '3.22.0'
     # https://swagger.io/docs/specification/authentication/bearer-authentication/
     API_SPEC_OPTIONS = {
         'components': {
@@ -33,10 +35,13 @@ class Config:
                     'scheme': 'bearer',
                     'bearerFormat': 'JWT'
                 },
-            },
+            }
         },
-        'security': {
-        }
+        'security': [
+            {
+                'bearerAuth': []
+            },
+        ]
     }
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'INSECURE')
 

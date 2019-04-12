@@ -87,13 +87,8 @@ def configure_secrets(app):
 
 
 def configure_instance(app):
-    # ensure the instance folder exists
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
-    # load 'instance/app.cfg' if it exists as our local instance configuration override
-    app.config.from_pyfile('app.cfg', silent=True)
+    # load 'instance.cfg' if it exists as our local instance configuration override
+    app.config.from_pyfile('instance.cfg', silent=True)
 
 
 def configure(app: App, test_config=None):
@@ -104,12 +99,9 @@ def configure(app: App, test_config=None):
         configure_secrets(app)
         configure_instance(app)
 
-    if app.config.get("DUMP_SQL"):
+    if app.config.get("SQLALCHEMY_ECHO"):
         print("Enabling query logging")
         print(f"Connected to database {app.config['SQLALCHEMY_DATABASE_URI']}")
-        logging.basicConfig()
-        # query logging
-        logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
     from .config import check_valid
     if not check_valid(app.config):
