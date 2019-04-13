@@ -32,9 +32,7 @@ def create_app(test_config=None) -> App:
     # extensions
     CORS(app)
     app.wsgi_app = ProxyFix(app.wsgi_app)
-    db.init_app(app)  # init sqlalchemy
-    app.db = db
-    app.migrate = Migrate(app, db)  # alembic
+    configure_database(app)
     api.init_app(app)  # flask-rest-api
 
     # CLI
@@ -45,6 +43,17 @@ def create_app(test_config=None) -> App:
     load_views(app)
 
     return app
+
+
+def configure_database(app):
+    """Set up flask with SQLAlchemy."""
+    db.init_app(app)  # init sqlalchemy
+    app.db = db
+    app.migrate = Migrate(app, db)  # alembic
+
+    @app.teardown_appcontext
+    def shutdown_session(exception=None):
+        db.session.remove()
 
 
 def load_views(self):
