@@ -9,7 +9,7 @@ class Config:
     LOAD_SECRETS = False  # skip secrets manager for local/test by default
 
     # this will come from secrets manager when running in AWS
-    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI', 'postgresql:///TEMPLATE')  # use local "TEMPLATE" DB for local dev
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'postgresql:///TEMPLATE')  # use local "TEMPLATE" DB for local dev
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     # set this to echo queries to stderr
     SQLALCHEMY_ECHO = os.getenv('SQL_ECHO', False)
