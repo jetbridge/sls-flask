@@ -23,7 +23,7 @@ pytest-factoryboy = "*"
 [dev-packages]
 "flake8" = "*"
 pytest = "*"
-mypy = ">=0.701"
+mypy = "*"
 "flake8-mypy" = {ref = "27f1888d7e6766d1b4357cb7a2ecede4bc95b281", git = "https://github.com/jetbridge/flake8-mypy.git"}
 importmagic = "*"
 epc = "*"
