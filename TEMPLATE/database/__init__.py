@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy.model import Model as ModelBase
 from sqlalchemy import DateTime
 from typing import List, Any, Dict, Optional
 from sqlalchemy.dialects.postgresql import insert as pg_insert
@@ -21,7 +22,7 @@ class Upsertable():
                    constraint=None,
                    set_: Dict[str, Any],
                    should_return_result=True,
-                   values: Dict[str, Any]) -> Optional[Model]:
+                   values: Dict[str, Any]) -> Optional[ModelBase]:
         """Insert or update if index_elements match.
 
         N.B. does not commit.
