@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 
 
 def create_app(test_config=None) -> App:
-    app = App(__name__)
+    app = App('TEMPLATE')
 
     # load config
     configure(app=app, test_config=test_config)
