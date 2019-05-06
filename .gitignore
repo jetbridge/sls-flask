@@ -22,4 +22,5 @@ var/
 
 __pycache__
 node_modules
-/instance
+instance.cfg
+script/initialize_project.sh
