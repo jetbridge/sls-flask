@@ -1,19 +1,28 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask_sqlalchemy.model import Model as ModelBase
-from sqlalchemy import DateTime
+from sqlalchemy import DateTime, Integer, func
 from typing import List, Any, Dict, Optional
 from sqlalchemy.dialects.postgresql import insert as pg_insert
+from flask_sqlalchemy import Model as FlaskSQLAModel
+from sqlalchemy import Column
 
-
-db = SQLAlchemy()
-Model = db.Model
-
+# recommended to use TIMESTAMP WITH TIMEZONE
 TSTZ = DateTime(timezone=True)
+
+
+class BaseModel(FlaskSQLAModel):
+    id = Column(Integer(), primary_key=True)
+    created = Column(TSTZ, nullable=False, server_default=func.now())
+    updated = Column(TSTZ, nullable=True, onupdate=func.now())
+
+
+db = SQLAlchemy(model_class=BaseModel)
+Model = db.Model
 
 
 # model mixin
 class Upsertable():
     """Model mixin to provide postgres upsert capability."""
+
     @classmethod
     def upsert_row(cls,
                    row_class,
@@ -22,7 +31,7 @@ class Upsertable():
                    constraint=None,
                    set_: Dict[str, Any],
                    should_return_result=True,
-                   values: Dict[str, Any]) -> Optional[ModelBase]:
+                   values: Dict[str, Any]) -> Optional[BaseModel]:
         """Insert or update if index_elements match.
 
         N.B. does not commit.
@@ -54,3 +63,7 @@ class Upsertable():
         assert result
         db.session.commit()
         return result
+
+
+# load all model classes now
+import TEMPLATE.model  # noqa: F401

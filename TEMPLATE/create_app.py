@@ -14,9 +14,7 @@ from flask_migrate import Migrate, MigrateCommand
 from .api import api
 from .commands import init_cli
 
-
 log = logging.getLogger(__name__)
-
 
 # logging
 # FIXME: set this from env?
@@ -96,22 +94,28 @@ def configure_secrets(app):
 
 
 def configure_instance(app):
-    # load 'instance.cfg' if it exists as our local instance configuration override
+    # load 'TEMPLATE/instance.cfg'
+    # if it exists as our local instance configuration override
     app.config.from_pyfile('instance.cfg', silent=True)
 
 
 def configure(app: App, test_config=None):
     configure_class(app)
+    config = app.config
     if test_config:
-        app.config.update(test_config)
+        config.update(test_config)
     else:
         configure_secrets(app)
         configure_instance(app)
 
-    if app.config.get("SQLALCHEMY_ECHO"):
+    # use 'DATABASE_URL' config for SQLAlchemy
+    if 'DATABASE_URL' in config and 'SQLALCHEMY_DATABASE_URI' not in config:
+        config['SQLALCHEMY_DATABASE_URI'] = config['DATABASE_URL']
+
+    if config.get("SQLALCHEMY_ECHO"):
         print("Enabling query logging")
         print(f"Connected to database {app.config['SQLALCHEMY_DATABASE_URI']}")
 
     from .config import check_valid
-    if not check_valid(app.config):
+    if not check_valid(config):
         raise Exception("Configuration is not valid.")

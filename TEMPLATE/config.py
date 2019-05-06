@@ -9,9 +9,10 @@ class Config:
     LOAD_SECRETS = False  # skip secrets manager for local/test by default
 
     # this will come from secrets manager when running in AWS
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'postgresql:///TEMPLATE')  # use local "TEMPLATE" DB for local dev
+    DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql:///TEMPLATE')  # use local "TEMPLATE" DB for local dev
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     # set this to echo queries to stderr
+    # broken: https://github.com/pallets/flask-sqlalchemy/issues/724
     SQLALCHEMY_ECHO = os.getenv('SQL_ECHO', False)
 
     DEBUG = os.getenv('DEBUG', False)
@@ -88,6 +89,7 @@ class ConfigurationValueMissingError(ConfigurationInvalidError):
 
 def check_valid(conf) -> bool:
     """Check if config looks okay."""
+
     def need_key(k):
         if k not in conf:
             raise ConfigurationKeyMissingError(k)
@@ -110,6 +112,4 @@ def check_valid_handler(event, context):
 
     ok = check_valid(conf)
 
-    return dict(
-        ok=ok,
-    )
+    return dict(ok=ok, )
