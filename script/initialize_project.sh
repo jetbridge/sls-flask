@@ -2,7 +2,7 @@
 
 DEFAULT_NAME=`basename $PWD`
 read -p "What is the name of your app? [$DEFAULT_NAME]: " name
-name=${name:-DEFAULT_NAME}
+name=${name:-$DEFAULT_NAME}
 
 if [[ -z "$name" ]]; then exit 1; fi
 
