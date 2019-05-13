@@ -32,6 +32,11 @@ balanced-match@^1.0.0:
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
   integrity sha1-ibTRmasr7kneFk6gK4nORi1xt2c=
 
+bluebird@3.5.4:
+  version "3.5.4"
+  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.4.tgz#d6cc661595de30d5b3af5fcedd3c0b3ef6ec5714"
+  integrity sha512-FG+nFEZChJrbQ9tIccIfZJBz3J7mLrAhxakAbnrJWn8d7aKOC+LWifa0G+p4ZqKp4y13T7juYvdhq9NzKdsrjw==
+
 bluebird@^3.0.6, bluebird@^3.5.3:
   version "3.5.3"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.3.tgz#7d01c6f9616c9a51ab0f8c549a79dfe6ec33efa7"
@@ -270,6 +275,13 @@ serverless-python-requirements@latest:
     md5-file "^4.0.0"
     rimraf "^2.6.2"
     shell-quote "^1.6.1"
+
+serverless-scriptable-plugin@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/serverless-scriptable-plugin/-/serverless-scriptable-plugin-1.0.1.tgz#8f20f37a51143b2f1bb56ddae26a8bd5ad6a0b57"
+  integrity sha512-/q8y4O1c4Ud8eC41qLqFxOdd1MpSJYpUJ0TKrCVyUJO7MdH6P0Uzd16QvH5TGNI1TD2ccoRVOn44/M9bB7ILjg==
+  dependencies:
+    bluebird "3.5.4"
 
 serverless-wsgi@^1.7.2:
   version "1.7.2"

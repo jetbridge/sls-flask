@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "serverless-scriptable-plugin": "^1.0.1",
     "serverless-wsgi": "^1.7.2"
   },
   "devDependencies": {

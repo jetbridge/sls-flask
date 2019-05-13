@@ -4,6 +4,7 @@ plugins:
   - serverless-python-requirements
   - serverless-pseudo-parameters
   - serverless-wsgi
+  - serverless-scriptable-plugin
 
 custom:
   stackName: ${self:service}-${self:provider.stage}
@@ -20,6 +21,8 @@ custom:
       - boto3
       - botocore
       - docutils
+  scriptHooks:
+    after:deploy:finalize: git checkout ${self:provider.stage} || git checkout -b ${self:provider.stage} || git merge $(git rev-parse --abbrev-ref @{-1}) && git push origin ${self:provider.stage}
 
 provider:
   name: aws
