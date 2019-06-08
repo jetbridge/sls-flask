@@ -65,7 +65,7 @@ def init_auth(app):
         from flask import jsonify
 
         return jsonify(ret), 404
- 
+
     @jwt.user_identity_loader
     def user_identity_lookup(user):
         assert user.id

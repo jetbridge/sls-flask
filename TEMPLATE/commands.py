@@ -22,7 +22,7 @@ def init_cli(app, manager):
             db.create_all(app=app)
             print("Initialized DB")
 
-        manager.add_command(seed_db_cmd)
+        manager.add_command(init_db_cmd)
 
         # config check
         @app.cli.command("config", help="View configuration")

@@ -42,7 +42,6 @@ provider:
 
   environment:
     STAGE: ${self:provider.stage}
-    FLASK_APP: app.py
     XRAY: true
     DATABASE_URL:
       "Fn::Join": ['', ['postgresql://', {"Fn::Join": ['', ['{{resolve:secretsmanager:', !Ref RDSInstanceSecret, ':SecretString:username}}']]}, ':', {"Fn::Join": ['', ['{{resolve:secretsmanager:', !Ref RDSInstanceSecret, ':SecretString:password}}']]}, '@',{ "Fn::Join": [":", ["Fn::GetAtt": [DBCluster, Endpoint.Address], "Fn::GetAtt": [DBCluster, Endpoint.Port]]] }, "/${self:custom.db.dbname}"]]

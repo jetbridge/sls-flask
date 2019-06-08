@@ -11,5 +11,5 @@ class AuthResponse(Schema):
     refresh_token = f.String()
 
 
-class TokenRefreshRequestSchema(Schema):
-    token = f.String(required=True, allow_none=False)
+class TokenRefreshResponseSchema(Schema):
+    access_token = f.String()

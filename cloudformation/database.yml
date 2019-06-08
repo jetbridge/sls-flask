@@ -9,6 +9,7 @@ Resources:
       EnablePerformanceInsights: true
       Engine: Postgres
       DBName: ${self:custom.db.dbname}
+      DBInstanceIdentifier: "#{AWS::StackName}"
       MasterUsername: !Join ['', ['{{resolve:secretsmanager:', !Ref RDSInstanceSecret, ':SecretString:username}}' ]]
       MasterUserPassword: !Join ['', ['{{resolve:secretsmanager:', !Ref RDSInstanceSecret, ':SecretString:password}}' ]]
       DBInstanceClass: ${self:custom.db.instance_class}
@@ -27,7 +28,7 @@ Resources:
         SecretStringTemplate: '{"username": "dbadmin"}'
         GenerateStringKey: 'password'
         PasswordLength: 16
-        ExcludeCharacters: '"@/\%'
+        ExcludeCharacters: '"@/\%:\\;'
   SecretRDSInstanceAttachment:
     Type: AWS::SecretsManager::SecretTargetAttachment
     Properties:
