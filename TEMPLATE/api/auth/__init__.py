@@ -3,7 +3,8 @@ from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
     jwt_refresh_token_required,
-    get_jwt_identity,
+    jwt_required,
+    get_current_user,
 )
 from TEMPLATE.model.user import User
 from .schema import LoginRequest, AuthResponse, TokenRefreshResponseSchema
@@ -28,9 +29,15 @@ def login(email: str, password: str):
     return auth_response_for_user(user)
 
 
-@blp.route("refresh-token", methods=["POST"])
+@blp.route("refresh", methods=["POST"])
 @jwt_refresh_token_required
 @blp.response(TokenRefreshResponseSchema)
 def refresh_token():
-    current_user = get_jwt_identity()
+    current_user = get_current_user()
     return {"access_token": create_access_token(identity=current_user)}
+
+
+@blp.route("check")
+@jwt_required
+def check_auth():
+    return "ok"

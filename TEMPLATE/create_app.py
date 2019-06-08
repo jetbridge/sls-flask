@@ -11,7 +11,7 @@ from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
-from flask import request
+from flask import jsonify
 from .db import db
 from .secret import get_secret
 from .api import api, init_views
@@ -55,15 +55,11 @@ def init_auth(app):
         if identity is None:
             return None
         user = User.query.get(identity)
-        if user:
-            user.current_region = request.headers.get(app.config["REGION_HEADER_NAME"])
         return user
 
     @jwt.user_loader_error_loader
     def custom_user_loader_error(identity):
         ret = {"msg": "User {} not found".format(identity)}
-        from flask import jsonify
-
         return jsonify(ret), 404
 
     @jwt.user_identity_loader
