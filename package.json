@@ -4,6 +4,6 @@
   "devDependencies": {
     "serverless-pseudo-parameters": "latest",
     "serverless-python-requirements": "latest",
-    "serverless-wsgi": "^1.7.2"
+    "serverless-wsgi": "latest"
   }
 }
