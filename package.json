@@ -1,9 +1,9 @@
 {
   "dependencies": {
-    "serverless-wsgi": "^1.7.2"
   },
   "devDependencies": {
     "serverless-pseudo-parameters": "latest",
-    "serverless-python-requirements": "latest"
+    "serverless-python-requirements": "latest",
+    "serverless-wsgi": "^1.7.2"
   }
 }

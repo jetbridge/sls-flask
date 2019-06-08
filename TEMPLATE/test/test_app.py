@@ -7,5 +7,5 @@ def test_config():
     assert check_valid(app.config), "app config check failed"
 
 
-def test_db(session):
-    assert session.execute('SELECT 1').scalar() == 1, "test DB query failed"
+def test_db(db_session):
+    assert db_session.execute('SELECT 1').scalar() == 1, "test DB query failed"

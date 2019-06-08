@@ -3,26 +3,26 @@
 Creates a new instance of our Flask app with plugins, blueprints, views, and configuration loaded.
 """
 import os
-from .flask import App
-from flask_cors import CORS
-from werkzeug.contrib.fixers import ProxyFix
 import logging
-from .database import db
-from .secret import get_secret
+from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
+from aws_xray_sdk.core import patcher, xray_recorder
+from werkzeug.contrib.fixers import ProxyFix
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
-from .api import api
+from flask_cors import CORS
+from flask_jwt_extended import JWTManager
+from flask import request
+from .db import db
+from .secret import get_secret
+from .api import api, init_views
 from .commands import init_cli
+from .flask import App
 
 log = logging.getLogger(__name__)
 
-# logging
-# FIXME: set this from env?
-# logging.basicConfig(level=logging.DEBUG)
-
 
 def create_app(test_config=None) -> App:
-    app = App('TEMPLATE')
+    app = App("TEMPLATE")
 
     # load config
     configure(app=app, test_config=test_config)
@@ -35,56 +35,80 @@ def create_app(test_config=None) -> App:
 
     # CLI
     manager = Manager(app)
-    manager.add_command('db', MigrateCommand)  # migrations under "flask db"
+    manager.add_command("db", MigrateCommand)  # migrations under "flask db"
     init_cli(app, manager)
 
-    load_views(app)
+    init_views()
+    init_xray(app)
+    init_auth(app)
 
     return app
+
+
+def init_auth(app):
+    jwt = JWTManager(app)
+
+    @jwt.user_loader_callback_loader
+    def user_loader_callback(identity):
+        from TEMPLATE.model.user import User
+
+        if identity is None:
+            return None
+        user = User.query.get(identity)
+        if user:
+            user.current_region = request.headers.get(app.config["REGION_HEADER_NAME"])
+        return user
+
+    @jwt.user_loader_error_loader
+    def custom_user_loader_error(identity):
+        ret = {"msg": "User {} not found".format(identity)}
+        from flask import jsonify
+
+        return jsonify(ret), 404
+ 
+    @jwt.user_identity_loader
+    def user_identity_lookup(user):
+        assert user.id
+        return user.id
 
 
 def configure_database(app):
     """Set up flask with SQLAlchemy."""
     db.init_app(app)  # init sqlalchemy
-    app.db = db
     app.migrate = Migrate(app, db)  # alembic
 
     @app.teardown_appcontext
     def shutdown_session(exception=None):
+        """Close session after request.
+
+        Ensures no open transactions remain.
+        """
         db.session.remove()
 
 
-def load_views(self):
-    """Register blueprints and routes."""
-    from .views import register_blueprints
-
-    for blp in register_blueprints:
-        api.register_blueprint(blp)
-
-
 def configure_class(app):
-    config_class = os.getenv('TEMPLATE_CONFIG'.upper())
+    config_class = os.getenv("TEMPLATE_CONFIG".upper())
 
     if not config_class:
         # figure out which config to load
-        if os.getenv('AWS_EXECUTION_ENV'):
+        if os.getenv("AWS_EXECUTION_ENV"):
             # running in AWS
-            stage = os.getenv('STAGE')
-            if stage == 'prod':
-                config_class = 'TEMPLATE.config.ProdConfig'
+            stage = os.getenv("STAGE")
+            if stage == "prod":
+                config_class = "TEMPLATE.config.ProdConfig"
             else:
-                config_class = 'TEMPLATE.config.DevConfig'
+                config_class = "TEMPLATE.config.DevConfig"
         else:
-            # local def
-            config_class = 'TEMPLATE.config.LocalDevConfig'
+            # local dev
+            config_class = "TEMPLATE.config.LocalDevConfig"
 
     app.config.from_object(config_class)
 
 
 def configure_secrets(app):
-    if app.config.get('LOAD_SECRETS'):
+    if app.config.get("LOAD_SECRETS"):
         # fetch config secrets from Secrets Manager
-        secret_name = app.config['SECRET_NAME']
+        secret_name = app.config["SECRET_NAME"]
         secrets = get_secret(secret_name=secret_name)
         if secrets:
             log.debug(f"{len(secrets.keys())} secrets loaded")
@@ -94,9 +118,9 @@ def configure_secrets(app):
 
 
 def configure_instance(app):
-    # load 'TEMPLATE/instance.cfg'
+    # load 'instance.cfg'
     # if it exists as our local instance configuration override
-    app.config.from_pyfile('instance.cfg', silent=True)
+    app.config.from_pyfile("instance.cfg", silent=True)
 
 
 def configure(app: App, test_config=None):
@@ -109,13 +133,22 @@ def configure(app: App, test_config=None):
         configure_instance(app)
 
     # use 'DATABASE_URL' config for SQLAlchemy
-    if 'DATABASE_URL' in config and 'SQLALCHEMY_DATABASE_URI' not in config:
-        config['SQLALCHEMY_DATABASE_URI'] = config['DATABASE_URL']
+    if "DATABASE_URL" in config and "SQLALCHEMY_DATABASE_URI" not in config:
+        config["SQLALCHEMY_DATABASE_URI"] = config["DATABASE_URL"]
 
     if config.get("SQLALCHEMY_ECHO"):
-        print("Enabling query logging")
-        print(f"Connected to database {app.config['SQLALCHEMY_DATABASE_URI']}")
+        logging.basicConfig()
+        logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
 
     from .config import check_valid
+
     if not check_valid(config):
         raise Exception("Configuration is not valid.")
+
+
+def init_xray(app: App):
+    if not app.config.get("XRAY"):
+        return
+    patcher.patch(("requests", "boto3"))  # xray tracing for external requests
+    xray_recorder.configure(service="TEMPLATE")
+    XRayMiddleware(app, xray_recorder)
