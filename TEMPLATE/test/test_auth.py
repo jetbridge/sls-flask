@@ -6,8 +6,8 @@ def test_login(client_unauthenticated, user, db_session):
         "/api/auth/login", json=dict(email=user.email, password=DEFAULT_PASSWORD)
     )
     assert response.status_code == 200
-    assert response.json.get("access_token") is not None
-    assert response.json.get("refresh_token") is not None
+    assert response.json.get("access_token")
+    assert response.json.get("refresh_token")
 
     # attempt refresh
     refresh_token = response.json.get("refresh_token")
