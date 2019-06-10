@@ -7,6 +7,15 @@ plugins:
 
 custom:
   stackName: ${self:service}-${self:provider.stage}
+  db:
+    dbname: "TEMPLATE_db"
+    instance_name: "#{AWS::StackName}db"
+    instance_class: db.t3.small
+    storage: 10  # GB
+  layers:
+    psycopg: "arn:aws:lambda:#{AWS::Region}:898466741470:layer:psycopg2-py37:3"
+
+  # plugins:
   wsgi:
     app: app.app
     packRequirements: false
@@ -27,8 +36,15 @@ provider:
   stage: ${opt:stage, 'dev'}
   region: eu-central-1
 
+  # x-ray
+  tracing:
+    lambda: true
+
   environment:
     STAGE: ${self:provider.stage}
+    XRAY: true
+    DATABASE_URL:
+      "Fn::Join": ['', ['postgresql://', {"Fn::Join": ['', ['{{resolve:secretsmanager:', !Ref RDSInstanceSecret, ':SecretString:username}}']]}, ':', {"Fn::Join": ['', ['{{resolve:secretsmanager:', !Ref RDSInstanceSecret, ':SecretString:password}}']]}, '@',{ "Fn::Join": [":", ["Fn::GetAtt": [DBCluster, Endpoint.Address], "Fn::GetAtt": [DBCluster, Endpoint.Port]]] }, "/${self:custom.db.dbname}"]]
 
   iamRoleStatements:
     - Effect: Allow
@@ -38,9 +54,9 @@ provider:
 
 package:
   exclude:
-    - instance/**
     - node_modules/**
     - venv/**
+    - instance.cfg
     - '**/__pycache__/**'
     - ".#*"
 
@@ -52,4 +68,15 @@ functions:
       - http: 'ANY {proxy+}'
     memorySize: 512
     layers:
-      - arn:aws:lambda:eu-central-1:898466741470:layer:psycopg2-py37:2  # psycopg2
+      - ${self:custom.layers.psycopg}
+    vpc:
+      securityGroupIds:
+        - "Fn::GetAtt": ServerlessSecurityGroup.GroupId
+      subnetIds:
+        - Ref: ServerlessSubnetA
+        - Ref: ServerlessSubnetB
+        - Ref: ServerlessSubnetC
+
+resources:
+  - ${file(cloudformation/vpc.yml)}
+  - ${file(cloudformation/database.yml)}

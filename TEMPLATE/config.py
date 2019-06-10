@@ -1,69 +1,72 @@
 import os
+from datetime import timedelta
 
-CONFIG_EXPECTED_KEYS = ('DATABASE_URL', 'OPENAPI_VERSION')
+CONFIG_EXPECTED_KEYS = ("DATABASE_URL", "OPENAPI_VERSION", "JWT_SECRET_KEY")
+# use local "TEMPLATE" DB for local dev
+DEFAULT_DB_URL = "postgresql:///TEMPLATE"
 
 
 class Config:
     """Base config."""
+
     # load more config from secrets manager?
-    LOAD_SECRETS = False  # skip secrets manager for local/test by default
+    LOAD_SECRETS = False
 
-    # this will come from secrets manager when running in AWS
-    DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql:///TEMPLATE')  # use local "TEMPLATE" DB for local dev
+    DATABASE_URL = os.getenv("DATABASE_URL", DEFAULT_DB_URL)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    # set this to echo queries to stderr
-    # broken: https://github.com/pallets/flask-sqlalchemy/issues/724
-    SQLALCHEMY_ECHO = os.getenv('SQL_ECHO', False)
 
-    DEBUG = os.getenv('DEBUG', False)
-
-    # print SQL queries
-    DUMP_SQL = os.getenv('DUMP_SQL', False)
+    # set SQL_ECHO=1 this to echo queries to stderr
+    SQLALCHEMY_ECHO = bool(os.getenv("SQL_ECHO"))
+    DEBUG = os.getenv("DEBUG", False)
+    XRAY = bool(os.getenv("XRAY"))
 
     # openapi can be found at /api/openapi.json /api/doc
-    OPENAPI_VERSION = '3.0.2'
-    OPENAPI_URL_PREFIX = '/api'
-    OPENAPI_JSON_PATH = 'openapi.json'
-    OPENAPI_REDOC_PATH = '/doc'
-    OPENAPI_SWAGGER_UI_PATH = '/swagger'
-    OPENAPI_SWAGGER_UI_VERSION = '3.22.0'
+    OPENAPI_VERSION = "3.0.2"
+    OPENAPI_URL_PREFIX = "/api"
+    OPENAPI_JSON_PATH = "openapi.json"
+    OPENAPI_REDOC_PATH = "/doc"
+    OPENAPI_SWAGGER_UI_PATH = "/swagger"
+    OPENAPI_SWAGGER_UI_VERSION = "3.22.2"
     # https://swagger.io/docs/specification/authentication/bearer-authentication/
     API_SPEC_OPTIONS = {
-        'components': {
-            'securitySchemes': {
-                'bearerAuth': {
-                    'type': 'http',
-                    'scheme': 'bearer',
-                    'bearerFormat': 'JWT'
-                },
+        "components": {
+            "securitySchemes": {
+                "bearerAuth": {
+                    "type": "http",
+                    "scheme": "bearer",
+                    "bearerFormat": "JWT",
+                }
             }
         },
-        'security': [
-            {
-                'bearerAuth': []
-            },
-        ]
+        "security": [{"bearerAuth": []}],
     }
-    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'INSECURE')
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "INSECURE")
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=8)
+    CAN_SEED_DB = True
 
 
 class LocalDevConfig(Config):
     """Local development environment config."""
+
     DEBUG = True
 
 
 class DevConfig(Config):
     """AWS dev environment and DB."""
-    LOAD_SECRETS = True
+
     # name of Secrets Manager secretID for config
-    SECRET_NAME = 'TEMPLATE/dev'
+    SECRET_NAME = "TEMPLATE/dev"
+    LOAD_SECRETS = False
 
 
 class ProdConfig(Config):
     """AWS dev environment and DB."""
-    LOAD_SECRETS = True
+
     # name of Secrets Manager secretID for config
-    SECRET_NAME = 'TEMPLATE/prod'
+    SECRET_NAME = "TEMPLATE/prod"
+    LOAD_SECRETS = False
+
+    CAN_SEED_DB = False
 
 
 # config checks
@@ -102,14 +105,15 @@ def check_valid(conf) -> bool:
 
 def check_valid_handler(event, context):
     # which env are we checking?
-    config_class = event.get('env', 'TEMPLATE.config.LocalDevConfig')
+    config_class = event.get("env", "TEMPLATE.config.LocalDevConfig")
 
     # create an app with this config
     from .flask import App
+
     app = App(__name__)
     app.config.from_object(config_class)
     conf = app.config
 
     ok = check_valid(conf)
 
-    return dict(ok=ok, )
+    return dict(ok=ok)
