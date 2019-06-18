@@ -4,8 +4,8 @@ Resources:
     DependsOn: DBSecurityGroup
     Type: AWS::RDS::DBInstance
     Properties:
-      DeletionProtection: false  # enable this for production!
-      PubliclyAccessible: true  # disable this for production?
+      DeletionProtection: ${self:custom.config.${self:provider.stage}.DeletionProtection}
+      PubliclyAccessible: true
       EnablePerformanceInsights: true
       Engine: Postgres
       DBName: ${self:custom.db.dbname}

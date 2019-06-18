@@ -1,7 +1,7 @@
 """Extensions to flask app."""
 
 from flask import Flask
-from .config import Config
+from flask.config import Config
 
 
 class App(Flask):

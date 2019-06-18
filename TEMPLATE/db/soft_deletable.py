@@ -1,11 +1,11 @@
-from sqlalchemy import Column, DateTime
+from sqlalchemy import Column, DateTime, func
 from sqlalchemy.orm.query import Query
 
-from TEMPLATE.db.query_filter import DefaultQueryFilter, QueryFilter
+from TEMPLATE.db.query_filter import QueryFilter, FilteredQuery
 
 
 class SoftDeletableQueryFilter(QueryFilter):
-    "By default only query for succesfully encoded videos." ""
+    """Omit rows marked as deleted."""
 
     def apply_default_filter(self) -> Query:
         return self.filter(self.entity.deleted_on.is_(None))
@@ -14,7 +14,16 @@ class SoftDeletableQueryFilter(QueryFilter):
         return not obj.deleted_on
 
 
-class SoftDeletable(DefaultQueryFilter):
+class SoftDeletableQuery(FilteredQuery):
+    """Query mixin."""
+
     default_filters = [SoftDeletableQueryFilter]
 
+
+class SoftDeletable:
+    """Model mixin."""
+
     deleted_on = Column(DateTime(timezone=True))
+
+    def mark_deleted(self) -> None:
+        self.deleted_on = func.now()

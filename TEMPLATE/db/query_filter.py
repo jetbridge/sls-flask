@@ -18,11 +18,11 @@ class QueryFilter(Query):
         raise NotImplementedError()
 
     @property
-    def _entity(self):
+    def entity(self):
         return self._primary_entity.type
 
 
-class DefaultQueryFilter(QueryFilter):
+class FilteredQuery(QueryFilter):
     """Automatically apply a filter to all queries by default.
 
     You must implement `apply_default_filter(self).`
@@ -35,10 +35,10 @@ class DefaultQueryFilter(QueryFilter):
 
     def __new__(cls, *args, **kwargs):
         """Create and return a new query object."""
-        obj = super(DefaultQueryFilter, cls).__new__(cls)
+        obj = super(FilteredQuery, cls).__new__(cls)
         without_filters = kwargs.pop("_without_filters", False)
         if len(args) > 0:
-            super(DefaultQueryFilter, obj).__init__(*args, **kwargs)
+            super(FilteredQuery, obj).__init__(*args, **kwargs)
 
             # add default filters unless without_filters() was called
             if not without_filters:
@@ -71,7 +71,7 @@ class DefaultQueryFilter(QueryFilter):
 
     def _orig_get(self, *args, **kwargs):
         """Call the original query.get function from the base class."""
-        return super(DefaultQueryFilter, self).get(*args, **kwargs)
+        return super(FilteredQuery, self).get(*args, **kwargs)
 
     def get_without_filters(self, *args, **kwargs):
         return self.without_filters()._orig_get(*args, **kwargs)
