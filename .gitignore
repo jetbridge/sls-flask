@@ -16,11 +16,14 @@ var/
 .installed.cfg
 *.egg
 
-# Serverless directories
+# Serverless
 .serverless
 .serverless-wsgi
+/serverless_wsgi.py
+/wsgi_handler.py
 
 __pycache__
 node_modules
 instance.cfg
 script/initialize_project.sh
+.mypy_cache

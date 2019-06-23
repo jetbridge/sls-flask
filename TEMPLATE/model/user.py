@@ -1,8 +1,11 @@
 from enum import Enum, unique
-from TEMPLATE.db import TSTZ, db, Model
 from sqlalchemy.types import Date, Text
+
 from sqlalchemy.ext.hybrid import hybrid_property
 from werkzeug.security import check_password_hash, generate_password_hash
+
+from TEMPLATE.db import TSTZ, db
+from TEMPLATE.db.extid import ExtID
 
 
 @unique
@@ -10,7 +13,7 @@ class UserType(Enum):
     normal = "normal"
 
 
-class User(Model):
+class User(db.Model, ExtID):
     email = db.Column(Text(), unique=True, nullable=True)
     email_validated = db.Column(TSTZ)
 
@@ -34,6 +37,9 @@ class User(Model):
 
     def __repr__(self):
         return f"<User id={self.id} {self.email}>"
+
+
+User.add_create_uuid_extension_trigger()
 
 
 class NormalUser(User):

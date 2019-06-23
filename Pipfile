@@ -26,7 +26,7 @@ requests = "*"
 "flake8" = "*"
 pytest = "*"
 mypy = "*"
-"flake8-mypy" = {ref = "27f1888d7e6766d1b4357cb7a2ecede4bc95b281", git = "https://github.com/jetbridge/flake8-mypy.git"}
+flake8-mypy = {ref = "27f1888d7e6766d1b4357cb7a2ecede4bc95b281",git = "https://github.com/jetbridge/flake8-mypy.git"}
 importmagic = "*"
 epc = "*"
 pytest-xdist = "*"
@@ -45,9 +45,10 @@ pre-commit = "*"
 pyls-isort = "*"
 pyls-mypy = "*"
 pyls-black = "*"
-python-language-server = {extras = ["all"], version = "*"}
+python-language-server = {extras = ["all"],version = "*"}
 moto = "*"
 rope = "*"
+sqlalchemy-stubs = "*"
 
 [requires]
 python_version = "3.7"
