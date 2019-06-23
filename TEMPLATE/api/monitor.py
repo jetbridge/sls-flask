@@ -8,7 +8,6 @@ from TEMPLATE.db import db
 blp = Blueprint("Monitoring", __name__, url_prefix="/api/monitoring")
 
 
-@api.definition("Health Check")
 class MonitoringSchema(Schema):
     ok = f.Boolean(dump_only=True)
 
