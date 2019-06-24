@@ -12,13 +12,24 @@ custom:
     prod:
       DeletionProtection: true
   stackName: ${self:service}-${self:provider.stage}
+  xray: true  # AWS Xray tracing of requests, queries
   db:
-    dbname: "TEMPLATE_db"
-    instance_name: "#{AWS::StackName}db"
+    dbname: "TEMPLATE"
+    instance_name: "#{AWS::StackName}"
     instance_class: db.t3.small
     storage: 10  # GB
   layers:
-    psycopg: "arn:aws:lambda:#{AWS::Region}:898466741470:layer:psycopg2-py37:5"
+    psycopg: "arn:aws:lambda:${self:provider.region}:898466741470:layer:psycopg2-py37:5"
+  secrets:
+    prefix: "${self:service}/${self:provider.stage}"
+    rds: "${self:custom.secrets.prefix}/rds"
+  vpc:
+    securityGroupIds:
+      - "Fn::GetAtt": ServerlessSecurityGroup.GroupId
+    subnetIds:
+      - Ref: ServerlessSubnetA
+      - Ref: ServerlessSubnetB
+      - Ref: ServerlessSubnetC
 
   # plugins:
   wsgi:
@@ -39,15 +50,18 @@ provider:
   name: aws
   runtime: python3.7
   stage: ${opt:stage, 'dev'}
-  region: eu-central-1
+  region: ${opt:region, 'eu-central-1'}
 
   # x-ray
   tracing:
-    lambda: true
+    lambda: ${self:custom.xray}
 
   environment:
+    SECRET_PREFIX: ${self:custom.secrets.prefix}
+    RDS_SECRET: ${self:custom.secrets.prefix}
     STAGE: ${self:provider.stage}
-    XRAY: true
+    XRAY: ${self:custom.xray}
+    SQL_ECHO: false
     DATABASE_URL:
       "Fn::Join": ['', ['postgresql://', {"Fn::Join": ['', ['{{resolve:secretsmanager:', !Ref RDSInstanceSecret, ':SecretString:username}}']]}, ':', {"Fn::Join": ['', ['{{resolve:secretsmanager:', !Ref RDSInstanceSecret, ':SecretString:password}}']]}, '@',{ "Fn::Join": [":", ["Fn::GetAtt": [DBCluster, Endpoint.Address], "Fn::GetAtt": [DBCluster, Endpoint.Port]]] }, "/${self:custom.db.dbname}"]]
 
@@ -55,7 +69,7 @@ provider:
     - Effect: Allow
       Action: secretsmanager:GetSecretValue
       Resource:
-        - "arn:aws:secretsmanager:#{AWS::Region}:#{AWS::AccountId}:secret:TEMPLATE/${self:provider.stage}*"
+        - "arn:aws:secretsmanager:#{AWS::Region}:#{AWS::AccountId}:secret:${self:custom.secrets.prefix}/*"
 
 package:
   exclude:
@@ -74,13 +88,7 @@ functions:
     memorySize: 512
     layers:
       - ${self:custom.layers.psycopg}
-    vpc:
-      securityGroupIds:
-        - "Fn::GetAtt": ServerlessSecurityGroup.GroupId
-      subnetIds:
-        - Ref: ServerlessSubnetA
-        - Ref: ServerlessSubnetB
-        - Ref: ServerlessSubnetC
+    vpc: ${self:custom.vpc}
 
 resources:
   - ${file(cloudformation/vpc.yml)}
