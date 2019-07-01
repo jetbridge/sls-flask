@@ -6,7 +6,6 @@ init-from-template:
 	yarn
 	pipenv install --dev
 	@bash script/initialize_project.sh
-	pre-commit install
 
 run:
 	flask run --reload

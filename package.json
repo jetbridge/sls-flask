@@ -2,8 +2,9 @@
   "dependencies": {
   },
   "devDependencies": {
-    "serverless-pseudo-parameters": "latest",
-    "serverless-python-requirements": "latest",
-    "serverless-wsgi": "latest"
+      "serverless-pseudo-parameters": "latest",
+      "serverless-python-requirements": "latest",
+      "serverless-wsgi": "latest",
+      "husky": "latest"
   }
 }
