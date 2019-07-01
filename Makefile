@@ -10,14 +10,14 @@ init-from-template:
 	@bash script/initialize_project.sh
 
 run:
-	(VENV) flask run --reload
+	$(VENV) flask run --reload
 
 seed:
-	(VENV) flask seed
+	$(VENV) flask seed
 
 test:
-	(VENV) pytest
+	$(VENV) pytest
 
 all-test:
-	(VENV) flake8
-	(VENV) pytest
+	$(VENV) flake8
+	$(VENV) pytest
