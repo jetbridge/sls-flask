@@ -1,8 +1,10 @@
 .PHONY: init migrate all-tests lint test db migrate rev run
 
-init: init-from-template
-
 VENV=pipenv run
+
+init: init-from-template
+	@echo "Visit http://127.0.0.1:5000/api/swagger"
+	@$(VENV) $(MAKE) run
 
 init-from-template:
 	yarn
@@ -10,7 +12,7 @@ init-from-template:
 	@bash script/initialize_project.sh
 
 run:
-	flask run --reload
+	FLASK_ENV=development flask run --reload
 
 seed:
 	flask seed
