@@ -11,7 +11,7 @@ class SoftDeletableQueryFilter(QueryFilter):
         return self.filter(self.entity.deleted_on.is_(None))
 
     def get_filter(self, obj: "SoftDeletable") -> bool:
-        return not obj.deleted_on
+        return obj is None or not obj.deleted_on
 
 
 class SoftDeletableQuery(FilteredQuery):
