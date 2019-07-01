@@ -12,7 +12,10 @@ subst="perl -i -pe s/TEMPLATE/$name/g"
 find TEMPLATE -type f -exec $subst {} \;
 $subst serverless.yml package.json app.py tox.ini README.md .travis.yml
 
+# rename
 mv TEMPLATE $name
+mv api.paw ${name}.paw
+
 echo ""
 echo "Project $name ready!"
 echo ""
