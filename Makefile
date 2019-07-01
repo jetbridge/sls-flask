@@ -1,6 +1,6 @@
 .PHONY: init migrate all-tests lint test db migrate rev run
 
-init: init-from-template seed
+init: init-from-template
 
 VENV=pipenv run
 
@@ -10,14 +10,14 @@ init-from-template:
 	@bash script/initialize_project.sh
 
 run:
-	$(VENV) flask run --reload
+	flask run --reload
 
 seed:
-	$(VENV) flask seed
+	flask seed
 
 test:
-	$(VENV) pytest
+	pytest
 
 all-test:
-	$(VENV) flake8
-	$(VENV) pytest
+	flake8
+	pytest

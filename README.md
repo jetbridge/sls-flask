@@ -48,7 +48,7 @@ sls deploy  # deploy serverless app
 createdb TEMPLATE
 flask db upgrade  # run migrations
 flask seed  # populate with sample data
-flask db  # migrations
+flask db  # other utilities
 ```
 
 ### API Documentation:
