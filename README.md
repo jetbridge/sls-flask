@@ -46,8 +46,9 @@ sls deploy  # deploy serverless app
 ### Database:
 ```
 createdb TEMPLATE
-flask db upgrade  # run migrations
+flask init-db  # recreate schema from models
 flask seed  # populate with sample data
+
 flask db  # other utilities
 ```
 

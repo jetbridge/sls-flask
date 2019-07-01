@@ -18,6 +18,11 @@ seed:
 test:
 	pytest
 
+init-db: flask-init-db seed
+
+flask-init-db:
+	flask init-db
+
 all-test:
 	flake8
 	pytest
