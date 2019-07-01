@@ -3,8 +3,6 @@
 VENV=pipenv run
 
 init: init-from-template
-	@echo "\n\nVisit http://127.0.0.1:5000/api/swagger"
-	@$(VENV) $(MAKE) run
 
 init-from-template:
 	yarn
