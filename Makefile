@@ -2,29 +2,22 @@
 
 init: init-from-template seed
 
+VENV=pipenv run
+
 init-from-template:
 	yarn
 	pipenv install --dev
-	@bash script/initialize_project.sh
+	@bash $(VENV) script/initialize_project.sh
 
 run:
-	flask run --reload
-
-db:
-	flask db
+	$(VENV) flask run --reload
 
 seed:
-	flask seed
-
-migrate:
-	flask db upgrade
-
-rev:
-	flask db migrate
+	$(VENV) flask seed
 
 test:
-	pytest
+	$(VENV) pytest
 
 all-test:
-	flake8
-	pytest
+	$(VENV) flake8
+	$(VENV) pytest
