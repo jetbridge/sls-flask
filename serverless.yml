@@ -62,10 +62,10 @@ provider:
     SECRET_PREFIX: ${self:custom.secrets.prefix}
     RDS_SECRETS_NAME: ${self:custom.secrets.rds.url}
     LOAD_RDS_SECRETS: true
-    LOAD_APP_SECRETS:  # enable to load user-defined secrets
     STAGE: ${self:provider.stage}
     XRAY: ${self:custom.xray}
-    SQL_ECHO:  # enable to print all SQL queries
+    # LOAD_APP_SECRETS: true  # enable to load user-defined secrets
+    # SQL_ECHO: true  # enable to print all SQL queries
 
   iamRoleStatements:
     - Effect: Allow
