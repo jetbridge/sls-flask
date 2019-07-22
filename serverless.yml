@@ -16,7 +16,7 @@ custom:
   db:
     dbname: "TEMPLATE"
     instance_name: "#{AWS::StackName}"
-    instance_class: db.t3.nano
+    instance_class: db.t3.small
     storage: 10  # GB
   layers:
     psycopg: "arn:aws:lambda:${self:provider.region}:898466741470:layer:psycopg2-py37:5"
