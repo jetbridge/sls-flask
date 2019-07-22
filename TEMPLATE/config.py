@@ -10,7 +10,10 @@ class Config:
     """Base config."""
 
     # load more config from secrets manager?
-    LOAD_SECRETS = False
+    LOAD_APP_SECRETS = os.getenv("LOAD_APP_SECRETS", False)
+    LOAD_RDS_SECRETS = os.getenv("LOAD_RDS_SECRETS", False)
+    SECRETS_NAME = os.getenv("APP_SECRETS_NAME", "TEMPLATE/dev")
+    RDS_SECRETS_NAME = os.getenv("RDS_SECRETS_NAME")
 
     DATABASE_URL = os.getenv("DATABASE_URL", DEFAULT_DB_URL)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -54,17 +57,15 @@ class LocalDevConfig(Config):
 class DevConfig(Config):
     """AWS dev environment and DB."""
 
-    # name of Secrets Manager secretID for config
-    SECRET_NAME = "TEMPLATE/dev"
-    LOAD_SECRETS = False
+    pass
 
 
 class ProdConfig(Config):
     """AWS dev environment and DB."""
 
     # name of Secrets Manager secretID for config
-    SECRET_NAME = "TEMPLATE/prod"
-    LOAD_SECRETS = False
+    APP_SECRETS_NAME = "TEMPLATE/prod"
+    LOAD_APP_SECRETS = False
 
     CAN_SEED_DB = False
 

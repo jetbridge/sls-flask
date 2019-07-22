@@ -2,21 +2,23 @@
 
 Creates a new instance of our Flask app with plugins, blueprints, views, and configuration loaded.
 """
-import os
 import logging
-from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
-from aws_xray_sdk.core import patcher, xray_recorder
-from werkzeug.contrib.fixers import ProxyFix
-from flask_script import Manager
-from flask_migrate import Migrate, MigrateCommand
-from flask_cors import CORS
-from flask_jwt_extended import JWTManager
+import os
+
 from flask import jsonify
-from .db import db
-from .secret import get_secret
+from flask_migrate import Migrate, MigrateCommand
+
 from .api import api, init_views
 from .commands import init_cli
+from .db import db
 from .flask import App
+from .secret import update_app_config
+from aws_xray_sdk.core import patcher, xray_recorder
+from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
+from flask_cors import CORS
+from flask_jwt_extended import JWTManager
+from flask_script import Manager
+from werkzeug.contrib.fixers import ProxyFix
 
 log = logging.getLogger(__name__)
 
@@ -102,15 +104,15 @@ def configure_class(app):
 
 
 def configure_secrets(app):
-    if app.config.get("LOAD_SECRETS"):
-        # fetch config secrets from Secrets Manager
-        secret_name = app.config["SECRET_NAME"]
-        secrets = get_secret(secret_name=secret_name)
-        if secrets:
-            log.debug(f"{len(secrets.keys())} secrets loaded")
-            app.config.update(secrets)
-        else:
-            log.debug("Failed to load secrets")
+    if app.config.get("LOAD_RDS_SECRETS"):
+        # fetch db config secrets from Secrets Manager
+        secret_name = app.config["RDS_SECRETS_NAME"]
+        update_app_config(app, secret_name)
+
+    if app.config.get("LOAD_APP_SECRETS"):
+        # fetch app config secrets from Secrets Manager
+        secret_name = app.config["APP_SECRETS_NAME"]
+        update_app_config(app, secret_name)
 
 
 def configure_instance(app):
