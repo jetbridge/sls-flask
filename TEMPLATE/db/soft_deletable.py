@@ -8,10 +8,10 @@ class SoftDeletableQueryFilter(QueryFilter):
     """Omit rows marked as deleted."""
 
     def apply_default_filter(self) -> Query:
-        return self.filter(self.entity.deleted_on.is_(None))
+        return self.filter(self.entity.deleted_at.is_(None))
 
     def get_filter(self, obj: "SoftDeletable") -> bool:
-        return obj is None or not obj.deleted_on
+        return obj is None or not obj.deleted_at
 
 
 class SoftDeletableQuery(FilteredQuery):
@@ -23,7 +23,7 @@ class SoftDeletableQuery(FilteredQuery):
 class SoftDeletable:
     """Model mixin."""
 
-    deleted_on = Column(DateTime(timezone=True))
+    deleted_at = Column(DateTime(timezone=True))
 
     def mark_deleted(self) -> None:
-        self.deleted_on = func.now()
+        self.deleted_at = func.now()

@@ -34,8 +34,8 @@ class BaseModel(FlaskSQLAModel, SoftDeletable, Upsertable):
     """Base class to use for all models."""
 
     id = Column(Integer(), primary_key=True)
-    created = Column(TSTZ, nullable=False, server_default=func.now())
-    updated = Column(TSTZ, nullable=True, onupdate=func.now())
+    created_at = Column(TSTZ, nullable=False, server_default=func.now())
+    updated_at = Column(TSTZ, nullable=True, onupdate=func.now())
 
 
 # initialize our XRay?FlaskSQLAlchemy instance
