@@ -16,7 +16,7 @@ custom:
   db:
     dbname: "TEMPLATE"
     instance_name: "#{AWS::StackName}"
-    instance_class: db.t3.small
+    instance_class: db.t3.nano
     storage: 10  # GB
   layers:
     psycopg: "arn:aws:lambda:${self:provider.region}:898466741470:layer:psycopg2-py37:5"
@@ -70,11 +70,13 @@ provider:
       Action: secretsmanager:GetSecretValue
       Resource:
         - "arn:aws:secretsmanager:#{AWS::Region}:#{AWS::AccountId}:secret:${self:custom.secrets.prefix}/*"
+        - "arn:aws:secretsmanager:#{AWS::Region}:#{AWS::AccountId}:secret:${self:custom.secrets.prefix}/dev-*"
 
 package:
   exclude:
     - node_modules/**
     - venv/**
+    - TEMPLATE/instance.cfg
     - instance.cfg
     - '**/__pycache__/**'
     - ".#*"

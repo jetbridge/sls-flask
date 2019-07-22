@@ -49,6 +49,7 @@ python-language-server = {extras = ["all"],version = "*"}
 moto = "*"
 rope = "*"
 sqlalchemy-stubs = "*"
+flask-shell-ipython = "*"
 
 [requires]
 python_version = "3.7"
