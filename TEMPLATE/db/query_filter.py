@@ -1,6 +1,6 @@
 from typing import Iterable, Type
 
-from sqlalchemy.orm.query import Query
+from flask_sqlalchemy import BaseQuery as Query
 
 
 class QueryFilter(Query):

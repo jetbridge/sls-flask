@@ -27,3 +27,5 @@ node_modules
 instance.cfg
 script/initialize_project.sh
 .mypy_cache
+
+.idea/

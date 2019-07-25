@@ -19,7 +19,7 @@ class ExtID:
 
     @classmethod
     def get_by_extid(cls: db.Model, uuid: str) -> Optional["ExtID"]:
-        return cls.filter_by(extid=uuid).one_or_none()
+        return cls.query.filter_by(extid=uuid).one_or_none()
 
     @classmethod
     def add_create_uuid_extension_trigger(cls):
