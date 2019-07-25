@@ -14,10 +14,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_DB: circle
     steps:
-      - run: curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-      - run: echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-      - run: sudo apt-get update
-      - run: sudo apt-get install yarn
+      - run: curl -o- -L https://yarnpkg.com/install.sh | bash
       - checkout
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
