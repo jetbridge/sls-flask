@@ -20,9 +20,9 @@ jobs:
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}-{{ checksum "yarn.lock" }}
       - run:
           command: |
+            yarn
             sudo pip install pipenv
             pipenv install --dev
-            yarn
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}-{{ checksum "yarn.lock" }}
           paths:
