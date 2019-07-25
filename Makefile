@@ -20,7 +20,7 @@ test:
 
 cfn-lint:
 	yarn sls package
-	cfn-lint .serverless/cloudformation-template-update-stack.json
+	cfn-lint
 
 init-db: flask-init-db seed
 
