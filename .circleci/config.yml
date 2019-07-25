@@ -39,7 +39,8 @@ jobs:
             - "node_modules"
       - run:
           command: |
-            make cfn-lint
+            /home/circleci/.yarn/bin/yarn sls package
+            pipenv run cfn-lint
       - run:
           command: |
             mkdir test-reports
