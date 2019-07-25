@@ -12,12 +12,12 @@ custom:
     prod:
       DeletionProtection: true
   stackName: ${self:service}-${self:provider.stage}
-  xray: true  # AWS Xray tracing of requests, queries
+  xray: 'true'  # AWS Xray tracing of requests, queries
   db:
     dbname: "TEMPLATE"
     instance_name: "#{AWS::StackName}"
     instance_class: db.t3.small
-    storage: 10  # GB
+    storage: '10'  # GB
   layers:
     psycopg: "arn:aws:lambda:${self:provider.region}:898466741470:layer:psycopg2-py37:5"
   secrets:
@@ -61,7 +61,7 @@ provider:
   environment:
     SECRET_PREFIX: ${self:custom.secrets.prefix}
     RDS_SECRETS_NAME: ${self:custom.secrets.rds.url}
-    LOAD_RDS_SECRETS: true
+    LOAD_RDS_SECRETS: 'true'
     STAGE: ${self:provider.stage}
     XRAY: ${self:custom.xray}
     # LOAD_APP_SECRETS: true  # enable to load user-defined secrets
