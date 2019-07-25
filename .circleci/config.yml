@@ -12,6 +12,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_DB: circle
     steps:
+      - sudo apt install yarn
       - checkout
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
