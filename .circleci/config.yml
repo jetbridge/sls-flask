@@ -20,8 +20,7 @@ jobs:
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}-{{ checksum "yarn.lock" }}
       - run:
           command: |
-            yarn
-            sudo pip install pipenv
+            TERM=linux TERMINFO=/etc/terminfo yarn
             pipenv install --dev
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}-{{ checksum "yarn.lock" }}
