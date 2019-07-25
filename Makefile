@@ -18,6 +18,10 @@ seed:
 test:
 	pytest
 
+cfn-lint:
+	yarn sls package
+	cfn-lint .serverless/cloudformation-template-update-stack.json
+
 init-db: flask-init-db seed
 
 flask-init-db:

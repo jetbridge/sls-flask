@@ -50,6 +50,7 @@ moto = "*"
 rope = "*"
 sqlalchemy-stubs = "*"
 flask-shell-ipython = "*"
+cfn-lint = "*"
 
 [requires]
 python_version = "3.7"
