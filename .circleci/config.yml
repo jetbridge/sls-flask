@@ -5,6 +5,8 @@ jobs:
       - image: circleci/python:3.7.1
         environment:
           PIPENV_VENV_IN_PROJECT: true
+          TERM: linux
+          TERMINFO: /etc/terminfo
           TEST_DATABASE_URL: postgresql://postgres@localhost/circle_test?sslmode=disable
       # CircleCI PostgreSQL images available at: https://hub.docker.com/r/circleci/postgres/
       - image: circleci/postgres:11
@@ -20,7 +22,7 @@ jobs:
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}-{{ checksum "yarn.lock" }}
       - run:
           command: |
-            TERM=linux TERMINFO=/etc/terminfo yarn
+            yarn
             pipenv install --dev
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}-{{ checksum "yarn.lock" }}
