@@ -9,7 +9,6 @@ Resources:
       EnableDnsHostnames: true  # disable for production
       CidrBlock: "10.0.0.0/16"
   ServerlessSubnetA:
-    DependsOn: ServerlessVPC
     Type: AWS::EC2::Subnet
     Properties:
       Tags:
@@ -20,7 +19,6 @@ Resources:
       AvailabilityZone: "#{AWS::Region}a"
       CidrBlock: "10.0.3.0/24"
   ServerlessSubnetB:
-    DependsOn: ServerlessVPC
     Type: AWS::EC2::Subnet
     Properties:
       Tags:
@@ -31,7 +29,6 @@ Resources:
       AvailabilityZone: "#{AWS::Region}b"
       CidrBlock: "10.0.1.0/24"
   ServerlessSubnetC:
-    DependsOn: ServerlessVPC
     Type: AWS::EC2::Subnet
     Properties:
       Tags:
@@ -42,7 +39,6 @@ Resources:
       AvailabilityZone: "#{AWS::Region}c"
       CidrBlock: "10.0.2.0/24"
   DBSubnetA:
-    DependsOn: ServerlessVPC
     Type: AWS::EC2::Subnet
     Properties:
       Tags:
@@ -53,7 +49,6 @@ Resources:
       AvailabilityZone: "#{AWS::Region}a"
       CidrBlock: "10.0.6.0/24"
   DBSubnetB:
-    DependsOn: ServerlessVPC
     Type: AWS::EC2::Subnet
     Properties:
       Tags:
@@ -64,7 +59,6 @@ Resources:
       AvailabilityZone: "#{AWS::Region}b"
       CidrBlock: "10.0.7.0/24"
   DBSubnetC:
-    DependsOn: ServerlessVPC
     Type: AWS::EC2::Subnet
     Properties:
       Tags:
@@ -75,7 +69,6 @@ Resources:
       AvailabilityZone: "#{AWS::Region}c"
       CidrBlock: "10.0.8.0/24"
   ServerlessSubnetPublic:
-    DependsOn: ServerlessVPC
     Type: AWS::EC2::Subnet
     Properties:
       VpcId:
@@ -83,14 +76,12 @@ Resources:
       AvailabilityZone: "#{AWS::Region}a"
       CidrBlock: "10.0.10.0/24"
   ServerlessSecurityGroup:
-    DependsOn: ServerlessVPC
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: SecurityGroup for Serverless Functions
       VpcId:
         Ref: ServerlessVPC
   DBSecurityGroup:
-    DependsOn: ServerlessVPC
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Ingress for RDS Instance
@@ -98,8 +89,8 @@ Resources:
         Ref: ServerlessVPC
       SecurityGroupIngress:
       - IpProtocol: tcp
-        FromPort: '5432'
-        ToPort: '5432'
+        FromPort: 5432
+        ToPort: 5432
         SourceSecurityGroupId:
           Ref: ServerlessSecurityGroup
   ServerlessPrivateSubnetGroup:
@@ -124,9 +115,6 @@ Resources:
       Domain: vpc
   NatGateway:  # NAT GW in public subnet
     Type: AWS::EC2::NatGateway
-    DependsOn:
-      - NATIP
-      - ServerlessSubnetPublic
     Properties:
       AllocationId: !GetAtt NATIP.AllocationId
       SubnetId: !Ref ServerlessSubnetPublic
@@ -139,9 +127,6 @@ Resources:
           Value: "#{AWS::StackName} Private"
   DefaultPrivateRoute:  # Route to provide internet access for private subnet (TODO: provide only for lambda, not RDS etc)
     Type: AWS::EC2::Route
-    DependsOn:
-      - NatGateway
-      - PrivateRouteTable
     Properties:
       RouteTableId: !Ref PrivateRouteTable
       DestinationCidrBlock: 0.0.0.0/0

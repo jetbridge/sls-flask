@@ -18,6 +18,10 @@ seed:
 test:
 	pytest
 
+cfn-lint:
+	yarn sls package
+	cfn-lint
+
 init-db: flask-init-db seed
 
 flask-init-db:

@@ -1,7 +1,6 @@
 Resources:
   # DB
   DBCluster:
-    DependsOn: DBSecurityGroup
     Type: AWS::RDS::DBInstance
     Properties:
       DeletionProtection: ${self:custom.config.${self:provider.stage}.DeletionProtection, "false"}

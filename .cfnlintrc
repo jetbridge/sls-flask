@@ -1,0 +1,4 @@
+templates:
+- .serverless/cloudformation-template-update-stack.json
+ignore_checks:
+- W3005  # DependsOn added by sls

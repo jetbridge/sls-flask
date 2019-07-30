@@ -5,6 +5,8 @@ jobs:
       - image: circleci/python:3.7.1
         environment:
           PIPENV_VENV_IN_PROJECT: true
+          TERM: linux
+          TERMINFO: /etc/terminfo
           TEST_DATABASE_URL: postgresql://postgres@localhost/circle_test?sslmode=disable
       # CircleCI PostgreSQL images available at: https://hub.docker.com/r/circleci/postgres/
       - image: circleci/postgres:11
@@ -12,21 +14,33 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_DB: circle
     steps:
+      # install node/yarn
+      - run: curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+      - run: sudo apt-get install -y nodejs
+      - run: curl -o- -L https://yarnpkg.com/install.sh | bash
+      # fetch source
       - checkout
+
+      # deal with dependencies
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
       - restore_cache:
-          key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}-{{ checksum "yarn.lock" }}
       - run:
           command: |
-            sudo pip install pipenv
+            /home/circleci/.yarn/bin/yarn
             pipenv install --dev
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
-          key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}-{{ checksum "yarn.lock" }}
           paths:
             - ".venv"
             - "/usr/local/bin"
             - "/usr/local/lib/python3.7/site-packages"
+            - "node_modules"
+      - run:
+          command: |
+            /home/circleci/.yarn/bin/yarn sls package
+            pipenv run cfn-lint
       - run:
           command: |
             mkdir test-reports
