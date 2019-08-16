@@ -58,6 +58,8 @@ provider:
   tracing:
     lambda: ${self:custom.xray}
 
+  vpc: ${self:custom.vpc}
+
   environment:
     SECRET_PREFIX: ${self:custom.secrets.prefix}
     RDS_SECRETS_NAME: ${self:custom.secrets.rds.url}
@@ -92,7 +94,6 @@ functions:
     memorySize: 512
     layers:
       - ${self:custom.layers.psycopg}
-    vpc: ${self:custom.vpc}
 
 resources:
   - ${file(cloudformation/vpc.yml)}
