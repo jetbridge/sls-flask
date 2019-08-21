@@ -15,7 +15,7 @@ from TEMPLATE.db.soft_deletable import SoftDeletable
 from TEMPLATE.db.upsert import Upsertable
 
 if TYPE_CHECKING:
-    from TEMPLATE.model.user import User
+    import TEMPLATE.model
 
 # recommended to use TIMESTAMP WITH TIMEZONE
 TSTZ = DateTime(timezone=True)
@@ -52,7 +52,7 @@ class Owned:
 
     @property
     @abstractmethod
-    def owner(self) -> "User":
+    def owner(self) -> "TEMPLATE.model.user.User":
         ...
 
 
