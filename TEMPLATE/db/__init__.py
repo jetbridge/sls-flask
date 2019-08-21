@@ -67,4 +67,4 @@ def on_table_create(class_, ddl):
 
 
 # load all model classes now
-import TEMPLATE.model  # noqa: F401
+import TEMPLATE.model  # noqa: F811
