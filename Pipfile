@@ -51,6 +51,9 @@ sqlalchemy-stubs = "*"
 flask-shell-ipython = "*"
 cfn-lint = "*"
 pytest-mypy = "*"
+sphinx = "*"
+sphinx-autodoc-typehints = "*"
+sphinx-rtd-theme = "*"
 
 [requires]
 python_version = "3.7"
