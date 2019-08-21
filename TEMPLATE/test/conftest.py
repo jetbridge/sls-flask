@@ -1,15 +1,12 @@
 import os
 import sqlalchemy as sa
 from faker import Faker
-from pytest_postgresql.factories import (
-    drop_postgresql_database,
-    init_postgresql_database,
-)
 import pytest
 from TEMPLATE.create_app import create_app
 from flask_jwt_extended import create_access_token
 from TEMPLATE.db.fixtures import NormalUserFactory
 from pytest_factoryboy import register
+from pytest_postgresql.factories import DatabaseJanitor
 
 register(NormalUserFactory)
 
@@ -20,23 +17,19 @@ LOCALE = "en_US"
 # should be a DB that doesn't exist
 DB_CONN = os.getenv("TEST_DATABASE_URL", "postgresql:///TEMPLATE_test".lower())
 DB_OPTS = sa.engine.url.make_url(DB_CONN).translate_connect_args()
+DB_VERSION = "10.10"
 
 
 @pytest.fixture(scope="session")
 def database(request):
     """Create a Postgres database for the tests, and drop it when the tests are done."""
-    pg_host = DB_OPTS.get("host")
-    pg_port = DB_OPTS.get("port")
-    pg_user = DB_OPTS.get("username")
-    pg_db = DB_OPTS["database"]
+    host = DB_OPTS.get("host")
+    port = DB_OPTS.get("port")
+    user = DB_OPTS.get("username")
+    db_name = DB_OPTS["database"]
 
-    db = init_postgresql_database(pg_user, pg_host, pg_port, pg_db)
-
-    yield db
-
-    @request.addfinalizer
-    def drop_database():
-        drop_postgresql_database(pg_user, pg_host, pg_port, pg_db, 11.2)
+    with DatabaseJanitor(user, host, port, db_name, DB_VERSION):
+        yield
 
 
 @pytest.fixture(scope="session")

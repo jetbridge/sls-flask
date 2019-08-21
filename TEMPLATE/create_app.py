@@ -31,7 +31,7 @@ def create_app(test_config=None) -> App:
 
     # extensions
     CORS(app)
-    app.wsgi_app = ProxyFix(app.wsgi_app)
+    app.wsgi_app = ProxyFix(app.wsgi_app)  # type: ignore
     configure_database(app)
     api.init_app(app)  # flask-rest-api
 

@@ -26,7 +26,7 @@ BaseQueryBase = XRayBaseQuery if xray_enabled else SQLABaseQuery
 SQLA = XRayFlaskSqlAlchemy if xray_enabled else FlaskSQLAlchemy
 
 
-class BaseQuery(BaseQueryBase):  # noqa: T484
+class BaseQuery(BaseQueryBase):  # type: ignore
     """Base class to use for queries."""
 
 

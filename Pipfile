@@ -26,14 +26,13 @@ requests = "*"
 "flake8" = "*"
 pytest = "*"
 mypy = "*"
-flake8-mypy = {ref = "27f1888d7e6766d1b4357cb7a2ecede4bc95b281",git = "https://github.com/jetbridge/flake8-mypy.git"}
 importmagic = "*"
 epc = "*"
 pytest-xdist = "*"
 watchdog = "*"
 pytest-flask-sqlalchemy = "*"
 pytest-factoryboy = "*"
-pytest-postgresql = "*"
+pytest-postgresql = {git = "https://github.com/ClearcodeHQ/pytest-postgresql.git"}
 pudb = "*"
 ipdb = "*"
 mypy_extensions = ">=0.4.1"
@@ -51,6 +50,7 @@ rope = "*"
 sqlalchemy-stubs = "*"
 flask-shell-ipython = "*"
 cfn-lint = "*"
+pytest-mypy = "*"
 
 [requires]
 python_version = "3.7"

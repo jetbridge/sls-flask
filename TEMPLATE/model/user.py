@@ -28,7 +28,7 @@ class User(db.Model, ExtID):
     def password(self):
         return self._password
 
-    @password.setter  # noqa: T484
+    @password.setter  # type: ignore
     def password(self, plaintext):
         self._password = generate_password_hash(plaintext)
 

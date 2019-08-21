@@ -1,50 +1,104 @@
-version: 2
-jobs:
-  build:
+version: 2.1
+
+executors:
+  # define our execution environment
+  py-exec:
     docker:
       - image: circleci/python:3.7.1
         environment:
           PIPENV_VENV_IN_PROJECT: true
-          TERM: linux
-          TERMINFO: /etc/terminfo
           TEST_DATABASE_URL: postgresql://postgres@localhost/circle_test?sslmode=disable
-      # CircleCI PostgreSQL images available at: https://hub.docker.com/r/circleci/postgres/
-      - image: circleci/postgres:11
+      - image: circleci/postgres:11-alpine-postgis
         environment:
           POSTGRES_USER: postgres
           POSTGRES_DB: circle
-    steps:
-      # install node/yarn
-      - run: curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
-      - run: sudo apt-get install -y nodejs
-      - run: curl -o- -L https://yarnpkg.com/install.sh | bash
-      # fetch source
-      - checkout
+    working_directory: ~/pybuild
 
-      # deal with dependencies
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - checkout_code
+      - deps:
+          requires:
+            - checkout_code
+      - tests:
+          requires:
+            - deps
+      - lint:
+          requires:
+            - deps
+      - type_checks:
+          requires:
+            - deps
+
+jobs:
+  # git clone
+  checkout_code:
+    executor: py-exec
+    working_directory: ~/pybuild
+    steps:
+      - checkout
+      - save_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/pybuild
+
+  # run pipenv install and save the .venv dir
+  deps:
+    executor: py-exec
+    steps:
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
       - restore_cache:
-          key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}-{{ checksum "yarn.lock" }}
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: v2-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
       - run:
           command: |
-            /home/circleci/.yarn/bin/yarn
-            pipenv install --dev
+            sudo pip install pipenv
+            pipenv install --deploy --dev
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
-          key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}-{{ checksum "yarn.lock" }}
+          key: v2-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
-            - ".venv"
-            - "/usr/local/bin"
-            - "/usr/local/lib/python3.7/site-packages"
-            - "node_modules"
-      - run:
-          command: |
-            /home/circleci/.yarn/bin/yarn sls package
-            pipenv run cfn-lint
+            - "~/pybuild/.venv"
+
+  # pytest
+  tests:
+    executor: py-exec
+    steps:
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: v2-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
       - run:
           command: |
             mkdir test-reports
             pipenv run pytest --junitxml=test-reports/junit.xml
-            pipenv run flake8
-      - store_test_results: # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
+      - store_test_results:
           path: test-reports
+
+  # mypy
+  type_checks:
+    executor: py-exec
+    steps:
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: v2-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+      - run:
+          command: |
+            pipenv run mypy .
+
+  # flake8
+  lint:
+    executor: py-exec
+    steps:
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          key: v2-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+      - run:
+          command: |
+            pipenv run flake8
