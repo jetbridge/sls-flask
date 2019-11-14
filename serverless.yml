@@ -15,9 +15,10 @@ custom:
   xray: 'true'  # AWS Xray tracing of requests, queries
   db:
     dbname: "TEMPLATE"
-    instance_name: "#{AWS::StackName}"
-    instance_class: db.t3.small
-    storage: '10'  # GB
+    minCapacity: 2
+    maxCapacity: 4
+    autoPause: true  # if not stage=='prod'
+    secondsUntilAutoPause: 43200  # 12 hours
   layers:
     psycopg: "arn:aws:lambda:${self:provider.region}:898466741470:layer:psycopg2-py37:5"
     default:
@@ -114,4 +115,4 @@ functions:
 
 resources:
   - ${file(cloudformation/vpc.yml)}
-  - ${file(cloudformation/database.yml)}
+  - ${file(cloudformation/db/aurora-serverless.yml)}
