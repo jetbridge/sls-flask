@@ -20,6 +20,8 @@ custom:
     storage: '10'  # GB
   layers:
     psycopg: "arn:aws:lambda:${self:provider.region}:898466741470:layer:psycopg2-py37:5"
+    default:
+      - ${self:custom.layers.psycopg}
   secrets:
     prefix: "${self:service}/${self:provider.stage}"
     rds:
@@ -83,6 +85,7 @@ package:
     - TEMPLATE/instance.cfg
     - instance.cfg
     - '**/__pycache__/**'
+    - '**/__pycache__'
     - ".#*"
 
 functions:
@@ -92,8 +95,22 @@ functions:
       - http: ANY /
       - http: 'ANY {proxy+}'
     memorySize: 512
-    layers:
-      - ${self:custom.layers.psycopg}
+    layers: ${self:custom.layers.default}
+    vpc: ${self:custom.vpc}
+    timeout: 10
+
+  seed:
+    handler: TEMPLATE.commands.seed_handler
+    layers: ${self:custom.layers.default}
+    vpc: ${self:custom.vpc}
+    timeout: 120
+
+  initDb:
+    handler: TEMPLATE.commands.init_handler
+    layers: ${self:custom.layers.default}
+    vpc: ${self:custom.vpc}
+    timeout: 300
+
 
 resources:
   - ${file(cloudformation/vpc.yml)}

@@ -15,6 +15,8 @@ class Config:
     SECRETS_NAME = os.getenv("APP_SECRETS_NAME", "TEMPLATE/dev")
     RDS_SECRETS_NAME = os.getenv("RDS_SECRETS_NAME")
 
+    DEV_DB_SCRIPTS_ENABLED = True
+
     DATABASE_URL = os.getenv("DATABASE_URL", DEFAULT_DB_URL)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
@@ -29,7 +31,7 @@ class Config:
     OPENAPI_JSON_PATH = "openapi.json"
     OPENAPI_REDOC_PATH = "/doc"
     OPENAPI_SWAGGER_UI_PATH = "/swagger"
-    OPENAPI_SWAGGER_UI_VERSION = "3.22.2"
+    OPENAPI_SWAGGER_UI_VERSION = "3.23.11"
     # https://swagger.io/docs/specification/authentication/bearer-authentication/
     API_SPEC_OPTIONS = {
         "components": {
@@ -60,14 +62,21 @@ class DevConfig(Config):
     pass
 
 
+class StagingConfig(Config):
+    """AWS staging environment and DB."""
+
+    pass
+
+
 class ProdConfig(Config):
-    """AWS dev environment and DB."""
+    """AWS production environment and DB."""
 
     # name of Secrets Manager secretID for config
     APP_SECRETS_NAME = "TEMPLATE/prod"
     LOAD_APP_SECRETS = False
 
     CAN_SEED_DB = False
+    DEV_DB_SCRIPTS_ENABLED = False
 
 
 # config checks

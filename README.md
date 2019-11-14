@@ -20,11 +20,11 @@ Comes with a lot of useful stuff ready to go.
 ## Quickstart:
 
 ### Prerequisites:
-`brew install pipenv yarn`
+`brew install pipenv`
 
 ### Create Project:
 ```
-yarn global add serverless
+npm -g install serverless
 sls install --url https://github.com/jetbridge/sls-flask --name myapp
 cd myapp
 make init  # install dependencies and initialize project
@@ -41,6 +41,7 @@ flask  # CLI commands
 flask run --reload  # run flask dev server
 sls wsgi serve  # run flask server under serverless
 sls deploy  # deploy serverless app
+make deploy-dev  # deploy dev to AWS and reset database
 ```
 
 ### Database:

@@ -89,11 +89,14 @@ def configure_class(app):
 
     if not config_class:
         # figure out which config to load
-        if os.getenv("AWS_EXECUTION_ENV"):
-            # running in AWS
-            stage = os.getenv("STAGE")
+        # get stage name
+        stage = os.getenv("STAGE")
+        if stage:
+            # running in AWS or sls wsgi serve
             if stage == "prod":
                 config_class = "TEMPLATE.config.ProdConfig"
+            elif stage == "staging":
+                config_class = "TEMPLATE.config.StagingConfig"
             else:
                 config_class = "TEMPLATE.config.DevConfig"
         else:
