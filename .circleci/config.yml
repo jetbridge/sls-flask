@@ -158,6 +158,7 @@ jobs:
             - /usr/local/lib/node_modules
   package_deployment:
     # package serverless application for deployment
+    executor: python-node
     steps:
       - run:
           name: Serverless package
@@ -185,6 +186,7 @@ jobs:
           command: AWS_PROFILE= serverless remove --stage test-${CIRCLE_BRANCH}-{{ .Environment.CIRCLE_SHA1 }}
           when: always  # always remove stack when we're done
   deploy_dev:
+    executor: python-node
     steps:
       - run:
           name: Serverles deploy (dev)
