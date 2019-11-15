@@ -161,10 +161,11 @@ jobs:
     executor: python-node
     steps:
       - run:
+          name: Lock pipfile
+          command: pipenv lock --requirements
+      - run:
           name: Serverless package
-          command: |
-            pipenv lock --requirements > /dev/null 2>&1
-            AWS_PROFILE= serverless package --package slspkg.zip
+          command: AWS_PROFILE= serverless package --package slspkg.zip
   test_deploy:
     executor: python-node
     steps:
