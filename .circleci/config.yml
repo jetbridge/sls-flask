@@ -86,13 +86,13 @@ jobs:
       - restore_cache:
           key: v1-pybuild-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
-          key: v1-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          key: v1-dep-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           command: |
             sudo pip install pipenv
             pipenv install --deploy --dev
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
-          key: v1-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          key: v1-dep-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/pybuild
 
@@ -101,7 +101,7 @@ jobs:
     executor: py-exec
     steps:
       - restore_cache:
-          key: v1-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          key: v1-dep-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           command: |
             mkdir test-reports
@@ -114,7 +114,7 @@ jobs:
     executor: py-exec
     steps:
       - restore_cache:
-          key: v1-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          key: v1-dep-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           command: |
             pipenv run mypy .
@@ -124,7 +124,7 @@ jobs:
     executor: py-exec
     steps:
       - restore_cache:
-          key: v1-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          key: v1-dep-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           command: |
             pipenv run flake8
