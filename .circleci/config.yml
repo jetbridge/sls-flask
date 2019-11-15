@@ -147,13 +147,13 @@ jobs:
       - restore_cache:
           key: v1-deploy-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
-          key: v1-deploy-deps-{{ checksum "package-lock.json" }}
+          key: v1-deploy-deps-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Install serverless plugins
           command: |
             npm install --no-save
       - save_cache:
-          key: v1-deploy-deps-{{ checksum "package-lock.json" }}
+          key: v1-deploy-deps-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/pynode
             # - /usr/local/lib/node_modules
@@ -162,7 +162,7 @@ jobs:
     executor: python-node
     steps:
       - restore_cache:
-          key: v1-deploy-deps-{{ checksum "package-lock.json" }}
+          key: v1-deploy-deps-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Lock pipfile
           command: pipenv lock --requirements
@@ -177,7 +177,7 @@ jobs:
     executor: python-node
     steps:
       - restore_cache:
-          key: v1-deploy-deps-{{ checksum "package-lock.json" }}
+          key: v1-deploy-deps-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v1-deploy-slspkg-{{ .Environment.CIRCLE_SHA1 }}
       - run:
@@ -201,7 +201,7 @@ jobs:
     executor: python-node
     steps:
       - restore_cache:
-          key: v1-deploy-deps-{{ checksum "package-lock.json" }}
+          key: v1-deploy-deps-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v1-deploy-slspkg-{{ .Environment.CIRCLE_SHA1 }}
       - run:
