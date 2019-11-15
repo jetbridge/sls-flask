@@ -14,6 +14,7 @@ executors:
           POSTGRES_DB: circle
     working_directory: ~/pybuild
   python-node:
+    working_directory: ~/pynode
     docker:
       - image: jetbridge/ci-python37-node10
 
@@ -21,10 +22,10 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - checkout_code
+      - checkout_code_build_test
       - deps:
           requires:
-            - checkout_code
+            - checkout_code_build_test
       - tests:
           requires:
             - deps
@@ -39,10 +40,10 @@ workflows:
     # not master branch: test deployment to a brand new environment then tear it down
     # master branch: deploy to the "dev" stage (optional)
     jobs:
-      - checkout_code
+      - checkout_code_deployment
       - create_deployment_environment:
           requires:
-            - checkout_code
+            - checkout_code_deployment
       - package_deployment:
           requires:
             - create_deployment_environment
@@ -66,15 +67,14 @@ workflows:
 
 jobs:
   # git clone
-  checkout_code:
+  checkout_code_build_test:
     executor: py-exec
-    working_directory: ~/pybuild
     steps:
       - checkout
       - save_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
-            - ~/pybuild
+            - ~/pynode
 
   # run pipenv install and save the .venv dir
   deps:
@@ -135,11 +135,21 @@ jobs:
             pipenv run flake8
 
   # DEPLOYMENT:
+  checkout_code_deployment:
+    executor: python-node
+    steps:
+      - checkout
+      - save_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/pynode
+
   create_deployment_environment:
     # prepare serverless environment
     executor: python-node
     steps:
-      - checkout
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: deps-v1-{{ checksum "package-lock.json" }}
       - run:
@@ -155,41 +165,47 @@ jobs:
     # package serverless application for deployment
     executor: python-node
     steps:
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Lock pipfile
           command: pipenv lock --requirements
       - run:
           name: Serverless package
-          command: AWS_PROFILE= /usr/local/bin/sls package --package slspkg.zip
+          command: AWS_PROFILE= sls package --package slspkg.zip
   test_deploy:
     executor: python-node
     steps:
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run:
-          name: Serverles deploy (test-${CIRCLE_BRANCH}-{{ .Environment.CIRCLE_SHA1 }})
-          command: AWS_PROFILE= /usr/local/bin/sls deploy --package slspkg.zip --stage test-${CIRCLE_BRANCH}-{{ .Environment.CIRCLE_SHA1 }}
+          name: Serverless deploy (test-${CIRCLE_BRANCH}-{{ .Environment.CIRCLE_SHA1 }})
+          command: AWS_PROFILE= sls deploy --package slspkg.zip --stage test-${CIRCLE_BRANCH}-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Initialize DB
-          command: AWS_PROFILE= /usr/local/bin/sls invoke -f initDb --stage dev
+          command: AWS_PROFILE= sls invoke -f initDb --stage dev
       - run:
           name: Seed DB
-          command: AWS_PROFILE= /usr/local/bin/sls invoke -f seed --stage dev
+          command: AWS_PROFILE= sls invoke -f seed --stage dev
       - run:
           name: Wait on stack success or failure
           command: |
             # aws cloudformation wait stack-create-complete --stack-id
       - run:
           name: Remove test CloudFormation stack
-          command: AWS_PROFILE= /usr/local/bin/sls remove --stage test-${CIRCLE_BRANCH}-{{ .Environment.CIRCLE_SHA1 }}
+          command: AWS_PROFILE= sls remove --stage test-${CIRCLE_BRANCH}-{{ .Environment.CIRCLE_SHA1 }}
           when: always  # always remove stack when we're done
   deploy_dev:
     executor: python-node
     steps:
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Serverles deploy (dev)
-          command: AWS_PROFILE= /usr/local/bin/sls deploy --package slspkg.zip --stage dev
+          command: AWS_PROFILE= sls deploy --package slspkg.zip --stage dev
       - run:
           name: Initialize DB
-          command: AWS_PROFILE= /usr/local/bin/sls invoke -f initDb --stage dev
+          command: AWS_PROFILE= sls invoke -f initDb --stage dev
       - run:
           name: Seed DB
-          command: AWS_PROFILE= /usr/local/bin/sls invoke -f seed --stage dev
+          command: AWS_PROFILE= sls invoke -f seed --stage dev
