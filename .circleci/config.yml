@@ -169,7 +169,7 @@ jobs:
           command: pipenv lock --requirements
       - run:
           name: Serverless package
-          command: AWS_PROFILE= sls package --package slspkg.zip
+          command: AWS_PROFILE= sls package --stage test-${CIRCLE_BRANCH}-${CIRCLE_SHA1} --package slspkg.zip
       - save_cache:
           key: v1-deploy-slspkg-{{ .Environment.CIRCLE_SHA1 }}
           paths:
