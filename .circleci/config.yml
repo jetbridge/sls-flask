@@ -146,7 +146,7 @@ jobs:
           name: Install serverless and plugins
           command: |
             npm i -g serverless
-            npm install
+            npm install --no-save
       - run:
           name: Install python tools
           command: |
