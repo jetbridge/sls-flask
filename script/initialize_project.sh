@@ -10,7 +10,7 @@ subst="perl -i -pe s/TEMPLATE/$name/g"
 
 # replace TEMPLATE in files
 find TEMPLATE -type f -exec $subst {} \;
-$subst serverless.yml package.json app.py tox.ini README.md .travis.yml doc/conf.py Makefile mypy.ini
+$subst serverless.yml package.json app.py tox.ini README.md .travis.yml doc/conf.py doc/Makefile Makefile mypy.ini
 
 # rename
 mv TEMPLATE $name
