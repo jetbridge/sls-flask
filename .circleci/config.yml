@@ -143,9 +143,8 @@ jobs:
       - restore_cache:
           key: deps-v1-{{ checksum "package-lock.json" }}
       - run:
-          name: Install serverless and plugins
+          name: Install serverless plugins
           command: |
-            npm i -g serverless
             npm install --no-save
       - save_cache:
           key: deps-v1-{{ checksum "package-lock.json" }}
