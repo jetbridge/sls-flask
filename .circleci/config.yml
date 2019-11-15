@@ -85,25 +85,23 @@ jobs:
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
       - restore_cache:
           key: v1-pybuild-repo-{{ .Environment.CIRCLE_SHA1 }}
-      # - restore_cache:
-      #     key: v2-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+      - restore_cache:
+          key: v1-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
       - run:
           command: |
             sudo pip install pipenv
             pipenv install --deploy --dev
       - save_cache: # cache Python dependencies using checksum of Pipfile as the cache-key
-          key: v2-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          key: v1-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
           paths:
-            - "~/pybuild/.venv"
+            - ~/pybuild
 
   # pytest
   tests:
     executor: py-exec
     steps:
       - restore_cache:
-          key: v1-pybuild-repo-{{ .Environment.CIRCLE_SHA1 }}
-      - restore_cache:
-          key: v2-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          key: v1-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
       - run:
           command: |
             mkdir test-reports
@@ -116,9 +114,7 @@ jobs:
     executor: py-exec
     steps:
       - restore_cache:
-          key: v1-pybuild-repo-{{ .Environment.CIRCLE_SHA1 }}
-      - restore_cache:
-          key: v2-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          key: v1-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
       - run:
           command: |
             pipenv run mypy .
@@ -128,9 +124,7 @@ jobs:
     executor: py-exec
     steps:
       - restore_cache:
-          key: v1-pybuild-repo-{{ .Environment.CIRCLE_SHA1 }}
-      - restore_cache:
-          key: v2-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          key: v1-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
       - run:
           command: |
             pipenv run flake8
@@ -161,14 +155,12 @@ jobs:
       - save_cache:
           key: v1-deploy-deps-{{ checksum "package-lock.json" }}
           paths:
-            - node_modules
-            - /usr/local/lib/node_modules
+            - ~/pynode
+            # - /usr/local/lib/node_modules
   package_deployment:
     # package serverless application for deployment
     executor: python-node
     steps:
-      - restore_cache:
-          key: v1-deploy-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v1-deploy-deps-{{ checksum "package-lock.json" }}
       - run:
@@ -184,8 +176,6 @@ jobs:
   test_deploy:
     executor: python-node
     steps:
-      - restore_cache:
-          key: v1-deploy-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v1-deploy-deps-{{ checksum "package-lock.json" }}
       - restore_cache:
@@ -210,8 +200,6 @@ jobs:
   deploy_dev:
     executor: python-node
     steps:
-      - restore_cache:
-          key: v1-deploy-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v1-deploy-deps-{{ checksum "package-lock.json" }}
       - restore_cache:
