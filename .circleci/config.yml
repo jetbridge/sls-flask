@@ -73,7 +73,7 @@ jobs:
     steps:
       - checkout
       - save_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          key: v1-pybuild-repo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/pybuild
 
@@ -84,7 +84,7 @@ jobs:
       - run: sudo chown -R circleci:circleci /usr/local/bin
       - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
       - restore_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          key: v1-pybuild-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v2-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
       - run:
@@ -101,7 +101,7 @@ jobs:
     executor: py-exec
     steps:
       - restore_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          key: v1-pybuild-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v2-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
       - run:
@@ -116,7 +116,7 @@ jobs:
     executor: py-exec
     steps:
       - restore_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          key: v1-pybuild-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v2-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
       - run:
@@ -128,7 +128,7 @@ jobs:
     executor: py-exec
     steps:
       - restore_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          key: v1-pybuild-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v2-dep-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
       - run:
@@ -142,7 +142,7 @@ jobs:
     steps:
       - checkout
       - save_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          key: v1-deploy-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/pynode
 
@@ -151,7 +151,7 @@ jobs:
     executor: python-node
     steps:
       - restore_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          key: v1-deploy-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: deps-v1-{{ checksum "package-lock.json" }}
       - run:
@@ -168,7 +168,7 @@ jobs:
     executor: python-node
     steps:
       - restore_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          key: v1-deploy-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Lock pipfile
           command: pipenv lock --requirements
@@ -179,7 +179,7 @@ jobs:
     executor: python-node
     steps:
       - restore_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          key: v1-deploy-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Serverless deploy (test-${CIRCLE_BRANCH}-{{ .Environment.CIRCLE_SHA1 }})
           command: AWS_PROFILE= sls deploy --package slspkg.zip --stage test-${CIRCLE_BRANCH}-{{ .Environment.CIRCLE_SHA1 }}
@@ -201,7 +201,7 @@ jobs:
     executor: python-node
     steps:
       - restore_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          key: v1-deploy-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Serverles deploy (dev)
           command: AWS_PROFILE= sls deploy --package slspkg.zip --stage dev
