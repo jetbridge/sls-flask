@@ -177,6 +177,10 @@ jobs:
       - run:
           name: Serverless package
           command: AWS_PROFILE= sls package --package slspkg.zip
+      - save_cache:
+          key: v1-deploy-slspkg-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - slspkg.zip
   test_deploy:
     executor: python-node
     steps:
@@ -184,6 +188,8 @@ jobs:
           key: v1-deploy-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v1-deploy-deps-{{ checksum "package-lock.json" }}
+      - restore_cache:
+          key: v1-deploy-slspkg-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Serverless deploy (test-${CIRCLE_BRANCH}-${CIRCLE_SHA1})
           command: AWS_PROFILE= sls deploy --package slspkg.zip --stage test-${CIRCLE_BRANCH}-${CIRCLE_SHA1}
@@ -208,6 +214,8 @@ jobs:
           key: v1-deploy-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           key: v1-deploy-deps-{{ checksum "package-lock.json" }}
+      - restore_cache:
+          key: v1-deploy-slspkg-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Serverles deploy (dev)
           command: AWS_PROFILE= sls deploy --package slspkg.zip --stage dev
