@@ -69,12 +69,13 @@ jobs:
   # git clone
   checkout_code_build_test:
     executor: py-exec
+    working_directory: ~/pybuild
     steps:
       - checkout
       - save_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
-            - ~/pynode
+            - ~/pybuild
 
   # run pipenv install and save the .venv dir
   deps:
@@ -137,6 +138,7 @@ jobs:
   # DEPLOYMENT:
   checkout_code_deployment:
     executor: python-node
+    working_directory: ~/pynode
     steps:
       - checkout
       - save_cache:
