@@ -161,36 +161,36 @@ jobs:
           command: pipenv lock --requirements
       - run:
           name: Serverless package
-          command: AWS_PROFILE= serverless package --package slspkg.zip
+          command: AWS_PROFILE= npx sls package --package slspkg.zip
   test_deploy:
     executor: python-node
     steps:
       - run:
           name: Serverles deploy (test-${CIRCLE_BRANCH}-{{ .Environment.CIRCLE_SHA1 }})
-          command: AWS_PROFILE= serverless deploy --package slspkg.zip --stage test-${CIRCLE_BRANCH}-{{ .Environment.CIRCLE_SHA1 }}
+          command: AWS_PROFILE= npx sls deploy --package slspkg.zip --stage test-${CIRCLE_BRANCH}-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Initialize DB
-          command: AWS_PROFILE= serverless invoke -f initDb --stage dev
+          command: AWS_PROFILE= npx sls invoke -f initDb --stage dev
       - run:
           name: Seed DB
-          command: AWS_PROFILE= serverless invoke -f seed --stage dev
+          command: AWS_PROFILE= npx sls invoke -f seed --stage dev
       - run:
           name: Wait on stack success or failure
           command: |
             # aws cloudformation wait stack-create-complete --stack-id
       - run:
           name: Remove test CloudFormation stack
-          command: AWS_PROFILE= serverless remove --stage test-${CIRCLE_BRANCH}-{{ .Environment.CIRCLE_SHA1 }}
+          command: AWS_PROFILE= npx sls remove --stage test-${CIRCLE_BRANCH}-{{ .Environment.CIRCLE_SHA1 }}
           when: always  # always remove stack when we're done
   deploy_dev:
     executor: python-node
     steps:
       - run:
           name: Serverles deploy (dev)
-          command: AWS_PROFILE= serverless deploy --package slspkg.zip --stage dev
+          command: AWS_PROFILE= npx sls deploy --package slspkg.zip --stage dev
       - run:
           name: Initialize DB
-          command: AWS_PROFILE= serverless invoke -f initDb --stage dev
+          command: AWS_PROFILE= npx sls invoke -f initDb --stage dev
       - run:
           name: Seed DB
-          command: AWS_PROFILE= serverless invoke -f seed --stage dev
+          command: AWS_PROFILE= npx sls invoke -f seed --stage dev
