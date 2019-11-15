@@ -1,0 +1,55 @@
+Conditions:
+  IsProd: !Equals ["${self:provider.stage}", "prod"]
+
+Resources:
+  # DB login secret
+  RDSInstanceSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: 'RDS master admin'
+      Name: ${self:custom.secrets.rds.credentials}
+      GenerateSecretString:
+        SecretStringTemplate: '{"username": "dbadmin"}'
+        GenerateStringKey: 'password'
+        PasswordLength: 16
+        ExcludeCharacters: '"@/\%:\\;'
+
+  # our DB connection info secret in the form of a DSN connection string
+  RDSURLSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: 'RDS DATABASE_URL'
+      Name: ${self:custom.secrets.rds.url}
+      SecretString:
+        "Fn::Join": ['', ['{"DATABASE_URL": "', 'postgresql://', {"Fn::Join": ['', ['{{resolve:secretsmanager:', !Ref RDSInstanceSecret, ':SecretString:username}}']]}, ':', {"Fn::Join": ['', ['{{resolve:secretsmanager:', !Ref RDSInstanceSecret, ':SecretString:password}}']]}, '@',{ "Fn::Join": [":", ["Fn::GetAtt": [DBCluster, Endpoint.Address], "Fn::GetAtt": [DBCluster, Endpoint.Port]]] }, "/${self:custom.db.dbname}", '"}']]
+
+  SecretRDSInstanceAttachment:
+    Type: AWS::SecretsManager::SecretTargetAttachment
+    Properties:
+      SecretId:
+        Ref: RDSInstanceSecret
+      TargetId:
+        Ref: DBCluster
+      TargetType: AWS::RDS::DBCluster
+
+  # aurora-postgresql serverless DB
+  DBCluster:
+    Type: AWS::RDS::DBCluster
+    Properties:
+      DeletionProtection: !If [IsProd, true, false]
+      Engine: aurora-postgresql
+      EngineMode: serverless
+      ScalingConfiguration:
+        AutoPause: !If [IsProd, false, true]
+        MaxCapacity: ${self:custom.db.maxCapacity}
+        MinCapacity: ${self:custom.db.minCapacity}
+        SecondsUntilAutoPause: ${self:custom.db.secondsUntilAutoPause}
+
+      DatabaseName: ${self:custom.db.dbname}
+      DBClusterIdentifier: "#{AWS::StackName}"
+      MasterUsername: !Join ['', ['{{resolve:secretsmanager:', !Ref RDSInstanceSecret, ':SecretString:username}}' ]]
+      MasterUserPassword: !Join ['', ['{{resolve:secretsmanager:', !Ref RDSInstanceSecret, ':SecretString:password}}' ]]
+      VpcSecurityGroupIds:
+      - "Fn::GetAtt": DBSecurityGroup.GroupId
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      # EnablePerformanceInsights: true
