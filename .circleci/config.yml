@@ -185,8 +185,8 @@ jobs:
       - restore_cache:
           key: v1-deploy-deps-{{ checksum "package-lock.json" }}
       - run:
-          name: Serverless deploy (test-${CIRCLE_BRANCH}-{{ .Environment.CIRCLE_SHA1 }})
-          command: AWS_PROFILE= sls deploy --package slspkg.zip --stage test-${CIRCLE_BRANCH}-{{ .Environment.CIRCLE_SHA1 }}
+          name: Serverless deploy (test-${CIRCLE_BRANCH}-${CIRCLE_SHA1})
+          command: AWS_PROFILE= sls deploy --package slspkg.zip --stage test-${CIRCLE_BRANCH}-${CIRCLE_SHA1}
       - run:
           name: Initialize DB
           command: AWS_PROFILE= sls invoke -f initDb --stage dev
@@ -199,7 +199,7 @@ jobs:
             # aws cloudformation wait stack-create-complete --stack-id
       - run:
           name: Remove test CloudFormation stack
-          command: AWS_PROFILE= sls remove --stage test-${CIRCLE_BRANCH}-{{ .Environment.CIRCLE_SHA1 }}
+          command: AWS_PROFILE= sls remove --stage test-${CIRCLE_BRANCH}-${CIRCLE_SHA1}
           when: always  # always remove stack when we're done
   deploy_dev:
     executor: python-node
