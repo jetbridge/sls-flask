@@ -6,25 +6,20 @@ plugins:
   - serverless-wsgi
 
 custom:
-  config:
-    dev:
-      DeletionProtection: false
-    prod:
-      DeletionProtection: true
   stackName: ${self:service}-${self:provider.stage}
-  xray: 'true'  # AWS Xray tracing of requests, queries
+  xray: 'Active'  # AWS Xray tracing of requests, queries
   db:
     dbname: "TEMPLATE"
-    instance_name: "#{AWS::StackName}"
-    instance_class: db.t3.small
-    storage: '10'  # GB
+    minCapacity: 2
+    maxCapacity: 4
+    secondsUntilAutoPause: 43200  # if not stage=='prod'
   layers:
-    psycopg: "arn:aws:lambda:${self:provider.region}:898466741470:layer:psycopg2-py37:5"
+    psycopg: "arn:aws:lambda:${self:provider.region}:898466741470:layer:psycopg2-py37:1"
+    default:
+      - ${self:custom.layers.psycopg}
   secrets:
     prefix: "${self:service}/${self:provider.stage}"
-    rds:
-      credentials: "${self:custom.secrets.prefix}/rds/credentials"
-      url: "${self:custom.secrets.prefix}/rds/url"
+    rds: "${self:custom.secrets.prefix}/rds/credentials"
   vpc:
     securityGroupIds:
       - "Fn::GetAtt": ServerlessSecurityGroup.GroupId
@@ -52,7 +47,7 @@ provider:
   name: aws
   runtime: python3.7
   stage: ${opt:stage, 'dev'}
-  region: ${opt:region, 'eu-central-1'}
+  region: ${opt:region, 'eu-west-1'}
 
   # x-ray
   tracing:
@@ -62,7 +57,7 @@ provider:
 
   environment:
     SECRET_PREFIX: ${self:custom.secrets.prefix}
-    RDS_SECRETS_NAME: ${self:custom.secrets.rds.url}
+    RDS_SECRETS_NAME: ${self:custom.secrets.rds}
     LOAD_RDS_SECRETS: 'true'
     STAGE: ${self:provider.stage}
     XRAY: ${self:custom.xray}
@@ -82,7 +77,9 @@ package:
     - venv/**
     - TEMPLATE/instance.cfg
     - instance.cfg
+    - doc/**
     - '**/__pycache__/**'
+    - '**/__pycache__'
     - ".#*"
 
 functions:
@@ -92,9 +89,22 @@ functions:
       - http: ANY /
       - http: 'ANY {proxy+}'
     memorySize: 512
-    layers:
-      - ${self:custom.layers.psycopg}
+    layers: ${self:custom.layers.default}
+    vpc: ${self:custom.vpc}
+    timeout: 10
+
+  seed:
+    handler: TEMPLATE.commands.seed_handler
+    layers: ${self:custom.layers.default}
+    vpc: ${self:custom.vpc}
+    timeout: 120
+
+  initDb:
+    handler: TEMPLATE.commands.init_handler
+    layers: ${self:custom.layers.default}
+    vpc: ${self:custom.vpc}
+    timeout: 300
 
 resources:
   - ${file(cloudformation/vpc.yml)}
-  - ${file(cloudformation/database.yml)}
+  - ${file(cloudformation/db/aurora-serverless.yml)}

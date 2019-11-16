@@ -1,7 +1,6 @@
 """Create fake models for tests and seeding dev DB."""
 from faker import Factory as FakerFactory
 import factory
-from pytest_factoryboy import register
 import random
 from TEMPLATE.model.user import NormalUser, User
 from TEMPLATE.db import db
@@ -41,7 +40,6 @@ class UserFactoryFactory(factory.Factory):
     )
 
 
-@register
 class NormalUserFactory(UserFactoryFactory):
     class Meta:
         model = NormalUser
