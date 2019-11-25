@@ -7,7 +7,7 @@ plugins:
 
 custom:
   stackName: ${self:service}-${self:provider.stage}
-  xray: 'Active'  # AWS Xray tracing of requests, queries
+  xray: false  # AWS Xray tracing of requests, queries. Set to 'Active' to actively trace.
   db:
     dbname: "TEMPLATE"
     minCapacity: 2
@@ -34,13 +34,13 @@ custom:
     packRequirements: false
   pythonRequirements:
     dockerizePip: false
-    slim: true
+    slim: false
     useDownloadCache: true
     useStaticCache: true
     noDeploy:
       - psycopg2  # provided by layer
-      - boto3
-      - botocore
+      # - boto3
+      # - botocore
       - docutils
 
 provider:
@@ -57,8 +57,13 @@ provider:
 
   environment:
     SECRET_PREFIX: ${self:custom.secrets.prefix}
-    RDS_SECRETS_NAME: ${self:custom.secrets.rds}
-    LOAD_RDS_SECRETS: 'true'
+
+    # aurora database credentials
+    AURORA_SECRET_ARN: !Ref RDSInstanceSecret
+    AURORA_CLUSTER_ARN: !Join [':', ["arn:aws:rds:#{AWS::Region}:#{AWS::AccountId}:cluster", !Ref DBCluster]]
+    DATABASE_URL: !Join ['/', ["postgresql+auroradataapi://:@", !Ref DBCluster]]
+    AURORA_DATA_API_ENABLED: 'true'
+
     STAGE: ${self:provider.stage}
     XRAY: ${self:custom.xray}
     # LOAD_APP_SECRETS: true  # enable to load user-defined secrets

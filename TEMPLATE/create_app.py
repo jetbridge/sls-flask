@@ -20,6 +20,7 @@ from flask_jwt_extended import JWTManager
 from flask_script import Manager
 from werkzeug.contrib.fixers import ProxyFix
 from nplusone.ext.flask_sqlalchemy import NPlusOne
+import sqlalchemy_aurora_data_api  # noqa: F401
 
 log = logging.getLogger(__name__)
 
@@ -74,8 +75,35 @@ def init_auth(app):
 
 def configure_database(app):
     """Set up flask with SQLAlchemy."""
+
+    # configure options for create_engine
+    engine_opts = app.config.get("SQLALCHEMY_ENGINE_OPTIONS", {})
+
+    if app.config.get("AURORA_DATA_API_ENABLED"):
+        # configure sqlalchemy-aurora-data-api
+        rds_secret_arn = app.get_config_value_or_raise("AURORA_SECRET_ARN")
+        aurora_cluster_arn = app.get_config_value_or_raise("AURORA_CLUSTER_ARN")
+        db_name = app.get_config_value_or_raise("DATABASE_NAME")
+        conn_url = f"postgresql+auroradataapi://:@/{db_name}"
+        app.config["DATABASE_URL"] = conn_url
+
+        # augment connect_args
+        connect_args = engine_opts.get("connect_args", {})
+        connect_args["aurora_cluster_arn"] = aurora_cluster_arn
+        connect_args["secret_arn"] = rds_secret_arn
+        engine_opts["connect_args"] = connect_args
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = engine_opts
+
     db.init_app(app)  # init sqlalchemy
     app.migrate = Migrate(app, db)  # alembic
+
+    # verify DB works
+    try:
+        with app.app_context():
+            db.session.execute("SELECT 1").scalar()
+    except Exception as ex:
+        log.error("Database configuration is invalid")
+        raise ex
 
     @app.teardown_appcontext
     def shutdown_session(exception=None):
@@ -109,12 +137,12 @@ def configure_class(app):
 
 
 def configure_secrets(app):
-    if app.config.get("LOAD_RDS_SECRETS"):
+    if app.config.get("LOAD_RDS_SECRET"):
         # fetch db config secrets from Secrets Manager
-        secret_name = app.config["RDS_SECRETS_NAME"]
+        secret_name = app.config["RDS_SECRET_NAME"]
         rds_secrets = get_secret(secret_name=secret_name)
         # construct database connection string from secret
-        app.config['DATABASE_URL'] = db_secret_to_url(rds_secrets)
+        app.config["DATABASE_URL"] = db_secret_to_url(rds_secrets)
 
     if app.config.get("LOAD_APP_SECRETS"):
         # fetch app config secrets from Secrets Manager

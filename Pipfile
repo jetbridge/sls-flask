@@ -24,6 +24,7 @@ requests = "*"
 Faker = "*"
 factory_boy = "*"
 nplusone = "*"
+sqlalchemy-aurora-data-api = "*"
 
 [dev-packages]
 pytest-factoryboy = "*"

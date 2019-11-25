@@ -12,9 +12,13 @@ class Config:
 
     # load more config from secrets manager?
     LOAD_APP_SECRETS = os.getenv("LOAD_APP_SECRETS", False)
-    LOAD_RDS_SECRETS = os.getenv("LOAD_RDS_SECRETS", False)
     SECRETS_NAME = os.getenv("APP_SECRETS_NAME", "TEMPLATE/dev")
-    RDS_SECRETS_NAME = os.getenv("RDS_SECRETS_NAME")
+
+    # use aurora data API?
+    AURORA_SECRET_ARN = os.getenv("AURORA_SECRET_ARN")
+    AURORA_CLUSTER_ARN = os.getenv("AURORA_CLUSTER_ARN")
+    DATABASE_NAME = os.getenv("DATABASE_NAME")
+    AURORA_DATA_API_ENABLED = os.getenv("AURORA_DATA_API_ENABLED", False)
 
     DEV_DB_SCRIPTS_ENABLED = False  # can init-db/seed/etc be run?
 
