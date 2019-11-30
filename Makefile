@@ -1,4 +1,4 @@
-.PHONY: init migrate all-tests lint test db migrate rev run ldb idb
+.PHONY: init migrate test-all cfn-lint test run ldb idb
 
 init: init-from-template
 
@@ -16,6 +16,11 @@ seed:
 test:
 	pytest
 
+test-all:
+	flake8
+	mypy .
+	pytest
+
 cfn-lint:
 	npm run sls-package
 	cfn-lint
@@ -29,10 +34,6 @@ dropcreatedb:
 
 flask-init-db:
 	flask init-db
-
-all-test:
-	flake8
-	pytest
 
 ldb:  # lambda init-db
 	sls invoke -f initDb

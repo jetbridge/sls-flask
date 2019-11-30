@@ -14,4 +14,4 @@ class BaseModel(JKBaseModel):
 db: SQLAlchemy = SQLA(model_class=BaseModel, query_class=BaseQuery)
 
 # load all model classes now
-import TEMPLATE.model  # noqa: F811
+import TEMPLATE.model  # noqa: F401

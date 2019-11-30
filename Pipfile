@@ -24,7 +24,8 @@ requests = "*"
 Faker = "*"
 factory_boy = "*"
 nplusone = "*"
-JetKit-Flask = "==6.1.0"
+# JetKit-Flask = "==6.1.0"
+JetKit-Flask = {editable = true,path = "./../backend-core"}
 
 [dev-packages]
 pytest-factoryboy = "*"
