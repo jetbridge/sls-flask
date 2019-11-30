@@ -1,7 +1,5 @@
 .PHONY: init migrate all-tests lint test db migrate rev run ldb idb
 
-VENV=pipenv run
-
 init: init-from-template
 
 init-from-template:

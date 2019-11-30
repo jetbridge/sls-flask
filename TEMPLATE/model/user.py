@@ -1,11 +1,10 @@
 from enum import Enum, unique
-from sqlalchemy.types import Date, Text
+from sqlalchemy.types import Text, Enum as SQLAEnum
+from sqlalchemy import Column
+from jetkit.db.extid import ExtID
+from jetkit.model.user import CoreUser
 
-from sqlalchemy.ext.hybrid import hybrid_property
-from werkzeug.security import check_password_hash, generate_password_hash
-
-from TEMPLATE.db import TSTZ, db
-from TEMPLATE.db.extid import ExtID
+from TEMPLATE.db import db
 
 
 @unique
@@ -13,30 +12,12 @@ class UserType(Enum):
     normal = "normal"
 
 
-class User(db.Model, ExtID):
-    email = db.Column(Text(), unique=True, nullable=True)
-    email_validated = db.Column(TSTZ)
-
-    dob = db.Column(Date())
-    name = db.Column(Text())
+class User(CoreUser, ExtID["User"]):
+    _user_type = Column(
+        SQLAEnum(UserType), nullable=False, server_default=UserType.normal.value
+    )
     avatar_url = db.Column(Text())
-
-    phone_number = db.Column(Text())
-    _password = db.Column(Text())
-
-    @hybrid_property
-    def password(self):
-        return self._password
-
-    @password.setter  # type: ignore
-    def password(self, plaintext):
-        self._password = generate_password_hash(plaintext)
-
-    def is_correct_password(self, plaintext):
-        return check_password_hash(self._password, plaintext)
-
-    def __repr__(self):
-        return f"<User id={self.id} {self.email}>"
+    __mapper_args__ = {"polymorphic_on": _user_type}
 
 
 User.add_create_uuid_extension_trigger()
