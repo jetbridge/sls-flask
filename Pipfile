@@ -26,6 +26,7 @@ factory_boy = "*"
 nplusone = "*"
 # JetKit-Flask = "==6.1.0"
 JetKit-Flask = {editable = true,path = "./../backend-core"}
+# JetKit-Flask = {git = "https://github.com/jetbridge/jetkit-flask.git#v6.1.0-pre1"}
 
 [dev-packages]
 pytest-factoryboy = "*"
@@ -59,6 +60,7 @@ pytest-mypy = "*"
 sphinx = "*"
 sphinx-autodoc-typehints = "*"
 sphinx-rtd-theme = "*"
+bento-cli = "*"
 
 [requires]
 python_version = "3.7"

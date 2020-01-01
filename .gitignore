@@ -29,3 +29,6 @@ script/initialize_project.sh
 .mypy_cache
 
 .idea/
+
+# Ignore bento tool run paths (this line added by `bento init`)
+.bento/

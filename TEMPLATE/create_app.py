@@ -8,7 +8,7 @@ import os
 from flask import jsonify
 from flask_migrate import Migrate, MigrateCommand
 
-from .api import api, init_views
+from .api import api
 from .commands import init_cli
 from .db import db
 from .flask import App
@@ -42,7 +42,6 @@ def create_app(test_config=None) -> App:
     manager.add_command("db", MigrateCommand)  # migrations under "flask db"
     init_cli(app, manager)
 
-    init_views()
     init_xray(app)
     init_auth(app)
 
@@ -114,7 +113,7 @@ def configure_secrets(app):
         secret_name = app.config["RDS_SECRETS_NAME"]
         rds_secrets = get_secret(secret_name=secret_name)
         # construct database connection string from secret
-        app.config['DATABASE_URL'] = db_secret_to_url(rds_secrets)
+        app.config["DATABASE_URL"] = db_secret_to_url(rds_secrets)
 
     if app.config.get("LOAD_APP_SECRETS"):
         # fetch app config secrets from Secrets Manager
