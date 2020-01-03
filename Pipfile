@@ -24,7 +24,7 @@ requests = "*"
 Faker = "*"
 factory_boy = "*"
 nplusone = "*"
-JetKit-Flask = "==7.0.0"
+JetKit-Flask = "==7.0.1"
 # JetKit-Flask = {editable = true,path = "./../backend-core"}
 # JetKit-Flask = {git = "https://github.com/jetbridge/jetkit-flask.git#v6.1.0-pre1"}
 
