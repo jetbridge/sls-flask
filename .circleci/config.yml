@@ -130,6 +130,16 @@ jobs:
           command: |
             pipenv run flake8
 
+  # bento
+  analyze:
+    executor: py-exec
+    steps:
+      - restore_cache:
+          key: v1-dep-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          command: |
+            pipenv run bento --agree --email my@email.here check
+
   # DEPLOYMENT:
   checkout_code_deployment:
     executor: python-node

@@ -18,7 +18,6 @@ sys.path.insert(0, os.path.abspath(".."))
 # -- Project information -----------------------------------------------------
 
 project = "Serverless Flask"
-copyright = "2019, JetBridge Inc."
 author = "JetBridge Inc."
 
 # -- General configuration ---------------------------------------------------

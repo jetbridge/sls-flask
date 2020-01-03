@@ -1,6 +1,6 @@
-.PHONY: init migrate all-tests lint test db migrate rev run ldb idb
+.PHONY: init run seed test cfn-lint test-all ldb idb flask-init-db deploy-dev deploy-staging
 
-VENV=pipenv run
+PYTHON=pipenv run
 
 init: init-from-template
 
@@ -10,13 +10,19 @@ init-from-template:
 	@bash script/initialize_project.sh
 
 run:
-	FLASK_ENV=development flask run --reload
+	FLASK_ENV=development $(PYTHON) flask run --reload
 
 seed:
-	flask seed
+	$(PYTHON) flask seed
 
 test:
-	pytest
+	$(PYTHON) pytest
+
+test-all:
+	$(PYTHON) flake8
+	$(PYTHON) mypy .
+	$(PYTHON) bento check
+	$(PYTHON) pytest
 
 cfn-lint:
 	npm run sls-package
@@ -31,10 +37,6 @@ dropcreatedb:
 
 flask-init-db:
 	flask init-db
-
-all-test:
-	flake8
-	pytest
 
 ldb:  # lambda init-db
 	sls invoke -f initDb
