@@ -36,7 +36,7 @@ class Config:
     OPENAPI_JSON_PATH = "openapi.json"
     OPENAPI_REDOC_PATH = "/doc"
     OPENAPI_SWAGGER_UI_PATH = "/swagger"
-    OPENAPI_SWAGGER_UI_VERSION = "3.23.11"
+    OPENAPI_SWAGGER_UI_VERSION = "3.24.2"  # https://cdnjs.com/libraries/swagger-ui
     # https://swagger.io/docs/specification/authentication/bearer-authentication/
     API_SPEC_OPTIONS = {
         "components": {
@@ -93,7 +93,7 @@ class ConfigurationInvalidError(Exception):
         self.message = message
 
     def __str__(self):
-        return self.message + f"\nEnvironment: {os.environ}"
+        return self.message  # + f"\nEnvironment: {os.environ}"
 
 
 class ConfigurationKeyMissingError(ConfigurationInvalidError):
