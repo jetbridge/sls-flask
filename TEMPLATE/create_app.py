@@ -8,7 +8,7 @@ import os
 from flask import jsonify
 from flask_migrate import Migrate, MigrateCommand
 
-from .api import api, init_views
+from .api import api
 from .commands import init_cli
 from .db import db
 from .flask import App
@@ -43,7 +43,6 @@ def create_app(test_config=None) -> App:
     manager.add_command("db", MigrateCommand)  # migrations under "flask db"
     init_cli(app, manager)
 
-    init_views()
     init_xray(app)
     init_auth(app)
 

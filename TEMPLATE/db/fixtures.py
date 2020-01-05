@@ -4,6 +4,7 @@ import factory
 import random
 from TEMPLATE.model.user import NormalUser, User
 from TEMPLATE.db import db
+from jetkit.db import Session
 
 faker: FakerFactory = FakerFactory.create()
 DEFAULT_NORMAL_USER_EMAIL = "test@test.test"
@@ -31,7 +32,18 @@ def seed_db():
     print("Database seeded.")
 
 
-class UserFactoryFactory(factory.Factory):
+class SQLAFactory(factory.alchemy.SQLAlchemyModelFactory):
+    """Use a scoped session when creating factory models."""
+
+    class Meta:
+        abstract = True
+        sqlalchemy_session = Session
+
+
+class UserFactoryFactory(SQLAFactory):
+    class Meta:
+        abstract = True
+
     dob = factory.LazyAttribute(lambda x: faker.simple_profile()["birthdate"])
     name = factory.LazyAttribute(lambda x: faker.name())
     password = DEFAULT_PASSWORD

@@ -2,6 +2,8 @@ import os
 import sqlalchemy as sa
 from faker import Faker
 import pytest
+
+from TEMPLATE.api import init_views
 from TEMPLATE.create_app import create_app
 from flask_jwt_extended import create_access_token
 from TEMPLATE.db.fixtures import NormalUserFactory
@@ -37,6 +39,7 @@ def app(database):
     """Create a Flask app context for tests."""
     # override config for test app here
     app = create_app(dict(SQLALCHEMY_DATABASE_URI=DB_CONN, TESTING=True))
+    init_views()
 
     with app.app_context():
         yield app
@@ -59,7 +62,7 @@ def client_unauthenticated(app):
 
 
 @pytest.fixture
-def client(app, user, session):
+def client(app, user):
     # get flask test client
     client = app.test_client()
 
@@ -77,14 +80,7 @@ def faker():
 
 
 @pytest.fixture
-def user(normal_user_factory, session):
+def user(normal_user_factory, db_session):
     user = normal_user_factory.create()
-    session.add(user)
-    session.commit()
+    db_session.commit()
     return user
-
-
-@pytest.fixture(autouse=True)
-def session(db_session):
-    """Ensure every test is inside a subtransaction giving us a clean slate each test."""
-    yield db_session
