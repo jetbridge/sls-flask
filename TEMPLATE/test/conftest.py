@@ -62,7 +62,7 @@ def client_unauthenticated(app):
 
 
 @pytest.fixture
-def client(app, user, session):
+def client(app, user):
     # get flask test client
     client = app.test_client()
 
@@ -80,13 +80,7 @@ def faker():
 
 
 @pytest.fixture
-def user(normal_user_factory, session):
+def user(normal_user_factory, db_session):
     user = normal_user_factory.create()
-    session.commit()
+    db_session.commit()
     return user
-
-
-@pytest.fixture(autouse=True)
-def session(db_session):
-    """Ensure every test is inside a subtransaction giving us a clean slate each test."""
-    yield db_session
