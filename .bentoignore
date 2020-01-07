@@ -31,3 +31,6 @@
 .gitignore
 .git/
 :include .gitignore
+
+# ignore virtualenv
+.venv/
