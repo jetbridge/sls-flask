@@ -27,6 +27,17 @@ custom:
       - Ref: ServerlessSubnetA
       - Ref: ServerlessSubnetB
       - Ref: ServerlessSubnetC
+  bastion:  # EC2 host to access private network / DB
+#    sshKeyPairName: ''  # set this to enable bastion ec2 instance
+#    alertEmails: 'alertme@example.com'
+    banner: https://ops.jetbridge.com/public/banner.txt
+    bootstrap: https://ops.jetbridge.com/public/bastion_bootstrap.sh
+    instanceType: t3a.nano
+    tenancy: default
+    bannerEnabled: 'true'
+    tcpForwardingEnabled: 'true'
+    x11ForwardingEnabled: 'false'
+    logRetentionInDays: 731
 
   # plugins:
   wsgi:
@@ -114,3 +125,4 @@ functions:
 resources:
   - ${file(cloudformation/vpc.yml)}
   - ${file(cloudformation/db/aurora-serverless.yml)}
+  - ${file(cloudformation/bastion.yml)}
