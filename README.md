@@ -3,7 +3,7 @@ Comes with a lot of useful stuff ready to go.
 
 
 ## Features
-* [Flask REST API](https://github.com/Nobatek/flask-rest-api)
+* [Flask Smorest](https://pypi.org/project/flask-smorest/)
   * OpenAPI
   * Swagger UI
   * Redoc

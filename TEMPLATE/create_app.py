@@ -34,7 +34,7 @@ def create_app(test_config=None) -> App:
     CORS(app)
     app.wsgi_app = ProxyFix(app.wsgi_app)  # type: ignore
     configure_database(app)
-    api.init_app(app)  # flask-rest-api
+    api.init_app(app)  # flask-smorest
     NPlusOne(app)
 
     # CLI
