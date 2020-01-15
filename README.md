@@ -23,14 +23,13 @@ Comes with a lot of useful stuff ready to go.
 ```
 brew install pipenv  # mac
 python -m pip install --upgrade pip pipenv  # generic
-npm i -g serverless  # for deployments
+npm i -g serverless
 ```
 
 
 ### Create Project:
 ```
-npm -g install serverless
-sls install --url https://github.com/jetbridge/sls-flask --name myapp
+npx sls install --url https://github.com/jetbridge/sls-flask --name myapp
 cd myapp
 make init  # install dependencies and initialize project
 ```
