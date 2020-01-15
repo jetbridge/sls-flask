@@ -41,6 +41,9 @@ class SQLAFactory(factory.alchemy.SQLAlchemyModelFactory):
 
 
 class UserFactoryFactory(SQLAFactory):
+    class Meta:
+        abstract = True
+
     dob = factory.LazyAttribute(lambda x: faker.simple_profile()["birthdate"])
     name = factory.LazyAttribute(lambda x: faker.name())
     password = DEFAULT_PASSWORD

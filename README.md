@@ -20,7 +20,11 @@ Comes with a lot of useful stuff ready to go.
 ## Quickstart:
 
 ### Prerequisites:
-`brew install pipenv`
+```
+brew install pipenv
+npm i -g serverless  # for deployments
+```
+
 
 ### Create Project:
 ```
@@ -39,6 +43,7 @@ pipenv shell  # activate python virtual environment
 ```
 flask  # CLI commands
 flask run --reload  # run flask dev server
+npm install  # install serverless plugins
 sls wsgi serve  # run flask server under serverless
 sls deploy  # deploy serverless app
 make deploy-dev  # deploy dev to AWS and reset database
