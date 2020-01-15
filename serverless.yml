@@ -39,6 +39,7 @@ custom:
     useStaticCache: true
     noDeploy:
       - psycopg2  # provided by layer
+      - psycopg2-binary  # provided by layer
       - boto3
       - botocore
       - docutils
