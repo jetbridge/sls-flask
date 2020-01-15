@@ -21,7 +21,8 @@ Comes with a lot of useful stuff ready to go.
 
 ### Prerequisites:
 ```
-brew install pipenv
+brew install pipenv  # mac
+python -m pip install --upgrade pip pipenv  # generic
 npm i -g serverless  # for deployments
 ```
 
