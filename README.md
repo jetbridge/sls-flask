@@ -47,6 +47,7 @@ npm install  # install serverless plugins
 sls wsgi serve  # run flask server under serverless
 sls deploy  # deploy serverless app
 make deploy-dev  # deploy dev to AWS and reset database
+make hooks  # install pre-commit hooks
 ```
 
 ### Database:

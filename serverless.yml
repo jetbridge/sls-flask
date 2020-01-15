@@ -45,7 +45,7 @@ custom:
 
 provider:
   name: aws
-  runtime: python3.7
+  runtime: python3.8
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'eu-west-1'}
 

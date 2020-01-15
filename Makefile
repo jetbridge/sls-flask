@@ -1,13 +1,16 @@
-.PHONY: init run seed test cfn-lint test-all ldb idb flask-init-db deploy-dev deploy-staging
+.PHONY: init init-from-template hooks run seed test check cfn-lint ldb idb flask-init-db deploy-dev deploy-staging
 
 PYTHON=pipenv run
 
-init: init-from-template
+init: init-from-template hooks
 
 init-from-template:
 	npm install
 	pipenv install --dev
 	@bash script/initialize_project.sh
+
+hooks:
+	$(PYTHON) pre-commit install
 
 run:
 	FLASK_ENV=development $(PYTHON) flask run --reload
@@ -18,7 +21,7 @@ seed:
 test:
 	$(PYTHON) pytest
 
-test-all:
+check:
 	$(PYTHON) flake8
 	$(PYTHON) mypy .
 	$(PYTHON) bento check
