@@ -25,7 +25,7 @@ jobs:
 
       # checks
       - name: "Check formatting: black"
-        uses: lgeiger/black-action@v1.0.1
+        uses: lgeiger/black-action@fe2a25
         with:
           args: ". --check"
       - name: "Lint: flake8"
