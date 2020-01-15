@@ -1,4 +1,4 @@
-.PHONY: init init-from-template hooks run seed test check cfn-lint ldb idb flask-init-db deploy-dev deploy-staging
+.PHONY: init init-from-template hooks run seed test check cfn-lint ldb init-db idb flask-init-db deploy-dev deploy-staging
 
 PYTHON=pipenv run
 
@@ -32,6 +32,7 @@ cfn-lint:
 	cfn-lint
 
 # init DB
+init-db: idb
 idb: dropcreatedb flask-init-db seed
 
 dropcreatedb:
