@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 "boto3" = "*"
-psycopg2 = "*"
+psycopg2-binary = "*"
 marshmallow-enum = "*"
 Flask = "*"
 Flask-Cors = "*"
@@ -28,6 +28,7 @@ JetKit-Flask = "==8.0.0"
 # JetKit-Flask = {editable = true,path = "./../backend-core"}
 # JetKit-Flask = {git = "https://github.com/jetbridge/jetkit-flask.git#v6.1.0-pre1"}
 flask-smorest = "*"
+webargs = "==5.5.2"
 
 [dev-packages]
 pytest-factoryboy = "*"
@@ -63,7 +64,7 @@ sphinx-rtd-theme = "*"
 bento-cli = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"
 
 [pipenv]
 allow_prereleases = true

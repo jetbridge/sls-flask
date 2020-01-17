@@ -21,15 +21,15 @@ Comes with a lot of useful stuff ready to go.
 
 ### Prerequisites:
 ```
-brew install pipenv
-npm i -g serverless  # for deployments
+brew install pipenv  # mac
+python -m pip install --upgrade pip pipenv  # generic
+npm i -g serverless
 ```
 
 
 ### Create Project:
 ```
-npm -g install serverless
-sls install --url https://github.com/jetbridge/sls-flask --name myapp
+npx sls install --url https://github.com/jetbridge/sls-flask --name myapp
 cd myapp
 make init  # install dependencies and initialize project
 ```
@@ -47,6 +47,7 @@ npm install  # install serverless plugins
 sls wsgi serve  # run flask server under serverless
 sls deploy  # deploy serverless app
 make deploy-dev  # deploy dev to AWS and reset database
+make hooks  # install pre-commit hooks
 ```
 
 ### Database:
