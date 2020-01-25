@@ -82,6 +82,7 @@ package:
     - '**/__pycache__/**'
     - '**/__pycache__'
     - ".#*"
+    - ".bento/**"
 
 functions:
   app:  # main flask entry point

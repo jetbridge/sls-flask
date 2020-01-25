@@ -2,15 +2,14 @@
 
 PYTHON=pipenv run
 
-init: init-from-template .git hooks
+init: init-from-template hooks
 
 init-from-template:
 	npm install
 	pipenv install --dev
 	@bash script/initialize_project.sh
-
-.git:
 	git init
+	bento init
 
 run:
 	FLASK_ENV=development $(PYTHON) flask run --reload
