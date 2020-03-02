@@ -5,10 +5,9 @@ PYTHON=poetry run
 init: init-from-template hooks
 
 init-from-template:
-	npm install
-	poetry install
 	@bash script/initialize_project.sh
 	git init
+	npm install
 
 run:
 	FLASK_ENV=development $(PYTHON) flask run --reload

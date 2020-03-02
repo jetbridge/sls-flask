@@ -16,6 +16,8 @@ $subst serverless.yml package.json app.py tox.ini README.md .github/workflows/py
 mv TEMPLATE $name
 mv api.paw ${name}.paw
 
+poetry install
+
 echo ""
 echo "Project $name ready!"
 echo ""
