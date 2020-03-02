@@ -8,13 +8,13 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       # environment
-      - uses: harmon758/postgresql-action@v1
-        with:
-          postgresql version: 11
       - name: Set up Python 3.8
         uses: actions/setup-python@v1
         with:
           python-version: 3.8
+      - uses: harmon758/postgresql-action@v1
+        with:
+          postgresql version: 11
       - uses: dschep/install-poetry-action@v1.3
       - name: "Install dependencies"
         run: poetry install -n --no-ansi
