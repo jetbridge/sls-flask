@@ -30,13 +30,3 @@ jobs:
           TEST_DATABASE_URL: "postgresql://postgres@localhost/pytest"
       - name: "Type checks: mypy"
         uses: jpetrucciani/mypy-check@master
-  bento:
-    runs-on: ubuntu-latest
-    name: Check
-    steps:
-      - uses: actions/checkout@v1
-      - name: Bento
-        id: bento
-        uses: returntocorp/bento-action@v1
-        with:
-          acceptTermsWithEmail: changeme@myco.com

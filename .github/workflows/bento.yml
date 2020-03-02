@@ -1,0 +1,15 @@
+name: Bento
+
+on: [pull_request]
+
+jobs:
+  bento:
+    runs-on: ubuntu-latest
+    name: Check
+    steps:
+      - uses: actions/checkout@v1
+      - name: Bento
+        id: bento
+        uses: returntocorp/bento-action@v1
+        with:
+          acceptTermsWithEmail: me@myself.org
