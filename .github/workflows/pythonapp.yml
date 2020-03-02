@@ -3,38 +3,40 @@ name: Python application
 on: [push]
 
 jobs:
-  build:
-
+  Build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v1
-
       # environment
+      - uses: harmon758/postgresql-action@v1
+        with:
+          postgresql version: 11
       - name: Set up Python 3.8
         uses: actions/setup-python@v1
         with:
           python-version: 3.8
-      - uses: harmon758/postgresql-action@v1
-        with:
-          postgresql version: 11
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip pipenv
-          pipenv install --deploy --dev --ignore-pipfile
-
-      # checks
+      - uses: dschep/install-poetry-action@v1.3
+      - name: "Install dependencies"
+        run: poetry install -n --no-ansi
       - name: "Check formatting: black"
         uses: lgeiger/black-action@master
         with:
           args: ". --check"
       - name: "Lint: flake8"
-        run: |
-          pipenv run flake8 . --count --show-source --statistics
+        run: flake8 . --count --show-source --statistics
       - name: "Test: pytest"
-        run: |
-          pipenv run pytest
+        run: pytest
         env:
           TEST_DATABASE_URL: "postgresql://postgres@localhost/pytest"
       - name: "Type checks: mypy"
         uses: jpetrucciani/mypy-check@master
+  bento:
+    runs-on: ubuntu-latest
+    name: Check
+    steps:
+      - uses: actions/checkout@v1
+      - name: Bento
+        id: bento
+        uses: returntocorp/bento-action@v1
+        with:
+          acceptTermsWithEmail: changeme@myco.com
