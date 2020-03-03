@@ -1,8 +1,17 @@
-name: Python application
+name: Build and test
 
 on: [push]
 
 jobs:
+  Formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: "Check formatting: black"
+        uses: lgeiger/black-action@master
+        with:
+          args: ". --check"
+
   Build:
     runs-on: ubuntu-latest
     steps:
@@ -18,10 +27,6 @@ jobs:
       - uses: dschep/install-poetry-action@v1.3
       - name: "Install dependencies"
         run: poetry install -n --no-ansi
-      - name: "Check formatting: black"
-        uses: lgeiger/black-action@master
-        with:
-          args: ". --check"
       - name: "Lint: flake8"
         run: flake8 . --count --show-source --statistics
       - name: "Test: pytest"

@@ -1,6 +1,6 @@
 name: Bento
 
-on: [pull_request]
+on: [push]
 
 jobs:
   bento:
