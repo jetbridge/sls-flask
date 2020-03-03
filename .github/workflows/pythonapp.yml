@@ -5,6 +5,7 @@ on: [push]
 jobs:
   Formatting:
     runs-on: ubuntu-latest
+    name: Check Formatting
     steps:
       - uses: actions/checkout@v1
       - name: "Check formatting: black"
@@ -14,6 +15,7 @@ jobs:
 
   Build-Test:
     runs-on: ubuntu-latest
+    name: Build and Test
     steps:
       - uses: actions/checkout@v1
       # environment
@@ -36,9 +38,9 @@ jobs:
       - name: "Type checks: mypy"
         uses: jpetrucciani/mypy-check@master
 
-  Static-Checks:
+  Bento:
     runs-on: ubuntu-latest
-    name: Check
+    name: Static Checks
     steps:
       - uses: actions/checkout@v1
       - name: Bento
