@@ -12,7 +12,7 @@ jobs:
         with:
           args: ". --check"
 
-  Build And Test:
+  Build-Test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -36,7 +36,7 @@ jobs:
       - name: "Type checks: mypy"
         uses: jpetrucciani/mypy-check@master
 
-  Static Checks:
+  Static-Checks:
     runs-on: ubuntu-latest
     name: Check
     steps:
