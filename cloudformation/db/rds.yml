@@ -1,5 +1,5 @@
 Conditions:
-  IsProd: !Equals ["${self:provider.stage}", "prod"]
+  IsProd: !Equals ["${self:provider.stage}", "prd"]
 
 Resources:
   # DB
@@ -7,28 +7,44 @@ Resources:
     Type: AWS::RDS::DBInstance
     Properties:
       DeletionProtection: !If [IsProd, true, false]
-      PubliclyAccessible: true  # change depending on bastion config
+      PubliclyAccessible: true # change depending on bastion config
       EnablePerformanceInsights: true
       Engine: Postgres
       DBName: ${self:custom.db.dbname}
       DBInstanceIdentifier: "#{AWS::StackName}"
-      MasterUsername: !Join ['', ['{{resolve:secretsmanager:', !Ref RDSInstanceSecret, ':SecretString:username}}' ]]
-      MasterUserPassword: !Join ['', ['{{resolve:secretsmanager:', !Ref RDSInstanceSecret, ':SecretString:password}}' ]]
+      MasterUsername:
+        !Join [
+          "",
+          [
+            "{{resolve:secretsmanager:",
+            !Ref RDSInstanceSecret,
+            ":SecretString:username}}",
+          ],
+        ]
+      MasterUserPassword:
+        !Join [
+          "",
+          [
+            "{{resolve:secretsmanager:",
+            !Ref RDSInstanceSecret,
+            ":SecretString:password}}",
+          ],
+        ]
       DBInstanceClass: ${self:custom.db.instance_class}
       AllocatedStorage: ${self:custom.db.storage}
       VPCSecurityGroups:
-      - "Fn::GetAtt": DBSecurityGroup.GroupId
+        - "Fn::GetAtt": DBSecurityGroup.GroupId
       DBSubnetGroupName: !Ref DBSubnetGroup
 
   # DB login secret
   RDSInstanceSecret:
     Type: AWS::SecretsManager::Secret
     Properties:
-      Description: 'RDS master admin'
+      Description: "RDS master admin"
       Name: ${self:custom.secrets.rds}
       GenerateSecretString:
         SecretStringTemplate: '{"username": "dbadmin"}'
-        GenerateStringKey: 'password'
+        GenerateStringKey: "password"
         PasswordLength: 16
         ExcludeCharacters: '"@/\%:\\;'
 

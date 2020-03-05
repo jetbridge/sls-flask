@@ -60,23 +60,17 @@ class LocalDevConfig(Config):
     DEV_DB_SCRIPTS_ENABLED = True
 
 
-class DevConfig(Config):
-    """AWS dev environment and DB."""
+class QAConfig(Config):
+    """AWS QA environment and DB."""
 
     DEV_DB_SCRIPTS_ENABLED = True
 
 
-class StagingConfig(Config):
-    """AWS staging environment and DB."""
-
-    DEV_DB_SCRIPTS_ENABLED = True
-
-
-class ProdConfig(Config):
+class ProductionConfig(Config):
     """AWS production environment and DB."""
 
     # name of Secrets Manager secretID for config
-    APP_SECRETS_NAME = "TEMPLATE/prod"
+    APP_SECRETS_NAME = "TEMPLATE/prd"
     LOAD_APP_SECRETS = False
     DEV_DB_SCRIPTS_ENABLED = False
 

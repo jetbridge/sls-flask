@@ -1,5 +1,6 @@
 """CLI commands."""
 from .db import db
+import flask_migrate
 
 
 def drop_all_tables(app):
@@ -75,3 +76,8 @@ def seed_handler(event, context):
         seed_db()
 
     return "Seeded DB."
+
+
+def migrate_handler(event, context):
+    flask_migrate.upgrade()
+    return "Migrated"

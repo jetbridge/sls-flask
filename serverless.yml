@@ -1,4 +1,6 @@
 service: TEMPLATE
+# app: TEMPLATE
+# org: myorg
 
 plugins:
   - serverless-python-requirements
@@ -7,12 +9,12 @@ plugins:
 
 custom:
   stackName: ${self:service}-${self:provider.stage}
-  xray: 'Active'  # AWS Xray tracing of requests, queries
+  xray: "Active" # AWS Xray tracing of requests, queries
   db:
     dbname: "TEMPLATE"
     minCapacity: 2
     maxCapacity: 4
-    secondsUntilAutoPause: 43200  # if not stage=='prod'
+    secondsUntilAutoPause: 43200 # if not stage=='prd'
   layers:
     psycopg: "arn:aws:lambda:${self:provider.region}:898466741470:layer:psycopg2-py37:1"
     default:
@@ -38,8 +40,8 @@ custom:
     useDownloadCache: true
     useStaticCache: true
     noDeploy:
-      - psycopg2  # provided by layer
-      - psycopg2-binary  # provided by layer
+      - psycopg2 # provided by layer
+      - psycopg2-binary # provided by layer
       - boto3
       - botocore
       - docutils
@@ -47,7 +49,7 @@ custom:
 provider:
   name: aws
   runtime: python3.8
-  stage: ${opt:stage, 'dev'}
+  stage: ${opt:stage, 'qa'}
   region: ${opt:region, 'eu-west-1'}
 
   # x-ray
@@ -59,7 +61,7 @@ provider:
   environment:
     SECRET_PREFIX: ${self:custom.secrets.prefix}
     RDS_SECRETS_NAME: ${self:custom.secrets.rds}
-    LOAD_RDS_SECRETS: 'true'
+    LOAD_RDS_SECRETS: "true"
     STAGE: ${self:provider.stage}
     XRAY: ${self:custom.xray}
     # LOAD_APP_SECRETS: true  # enable to load user-defined secrets
@@ -79,17 +81,17 @@ package:
     - TEMPLATE/instance.cfg
     - instance.cfg
     - doc/**
-    - '**/__pycache__/**'
-    - '**/__pycache__'
+    - "**/__pycache__/**"
+    - "**/__pycache__"
     - ".#*"
     - ".bento/**"
 
 functions:
-  app:  # main flask entry point
+  app: # main flask entry point
     handler: wsgi_handler.handler
     events:
       - http: ANY /
-      - http: 'ANY {proxy+}'
+      - http: "ANY {proxy+}"
     memorySize: 512
     layers: ${self:custom.layers.default}
     vpc: ${self:custom.vpc}
@@ -106,6 +108,12 @@ functions:
     layers: ${self:custom.layers.default}
     vpc: ${self:custom.vpc}
     timeout: 300
+
+  migrate:
+    handler: TEMPLATE.commands.migrate_handler
+    timeout: 900
+    layers: ${self:custom.layers.default}
+    vpc: ${self:custom.vpc}
 
 resources:
   - ${file(cloudformation/vpc.yml)}
