@@ -18,7 +18,6 @@ from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_script import Manager
-from werkzeug.contrib.fixers import ProxyFix
 from nplusone.ext.flask_sqlalchemy import NPlusOne
 import sqlalchemy_aurora_data_api  # noqa: F401
 
@@ -33,9 +32,8 @@ def create_app(test_config=None) -> App:
 
     # extensions
     CORS(app)
-    app.wsgi_app = ProxyFix(app.wsgi_app)  # type: ignore
     configure_database(app)
-    api.init_app(app)  # flask-rest-api
+    api.init_app(app)  # flask-smorest
     NPlusOne(app)
 
     # CLI
@@ -122,12 +120,10 @@ def configure_class(app):
         stage = os.getenv("STAGE")
         if stage:
             # running in AWS or sls wsgi serve
-            if stage == "prod":
-                config_class = "TEMPLATE.config.ProdConfig"
-            elif stage == "staging":
-                config_class = "TEMPLATE.config.StagingConfig"
+            if stage == "prd":
+                config_class = "TEMPLATE.config.ProductionConfig"
             else:
-                config_class = "TEMPLATE.config.DevConfig"
+                config_class = "TEMPLATE.config.QAConfig"
         else:
             # local dev
             config_class = "TEMPLATE.config.LocalDevConfig"

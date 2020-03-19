@@ -1,4 +1,6 @@
 service: TEMPLATE
+# app: TEMPLATE
+# org: myorg
 
 plugins:
   - serverless-python-requirements
@@ -12,7 +14,7 @@ custom:
     dbname: "TEMPLATE"
     minCapacity: 2
     maxCapacity: 4
-    secondsUntilAutoPause: 43200  # if not stage=='prod'
+    secondsUntilAutoPause: 43200 # if not stage=='prd'
   layers:
     psycopg: "arn:aws:lambda:${self:provider.region}:898466741470:layer:psycopg2-py37:1"
     default:
@@ -49,15 +51,16 @@ custom:
     useDownloadCache: true
     useStaticCache: true
     noDeploy:
-      - psycopg2  # provided by layer
-      # - boto3
-      # - botocore
+      - psycopg2 # provided by layer
+      - psycopg2-binary # provided by layer
+      - boto3
+      - botocore
       - docutils
 
 provider:
   name: aws
-  runtime: python3.7
-  stage: ${opt:stage, 'dev'}
+  runtime: python3.8
+  stage: ${opt:stage, 'qa'}
   region: ${opt:region, 'eu-west-1'}
 
   # x-ray
@@ -75,6 +78,9 @@ provider:
     DATABASE_URL: !Join ['/', ["postgresql+auroradataapi://:@", !Ref DBCluster]]
     AURORA_DATA_API_ENABLED: 'true'
     DATABASE_NAME: !Ref DBCluster
+
+    RDS_SECRET_NAME: ${self:custom.secrets.rds}
+    LOAD_RDS_SECRET: "false"
 
     STAGE: ${self:provider.stage}
     XRAY: ${self:custom.xray}
@@ -95,16 +101,17 @@ package:
     - TEMPLATE/instance.cfg
     - instance.cfg
     - doc/**
-    - '**/__pycache__/**'
-    - '**/__pycache__'
+    - "**/__pycache__/**"
+    - "**/__pycache__"
     - ".#*"
+    - ".bento/**"
 
 functions:
-  app:  # main flask entry point
+  app: # main flask entry point
     handler: wsgi_handler.handler
     events:
       - http: ANY /
-      - http: 'ANY {proxy+}'
+      - http: "ANY {proxy+}"
     memorySize: 512
     layers: ${self:custom.layers.default}
     vpc: ${self:custom.vpc}
@@ -121,6 +128,12 @@ functions:
     layers: ${self:custom.layers.default}
     vpc: ${self:custom.vpc}
     timeout: 300
+
+  migrate:
+    handler: TEMPLATE.commands.migrate_handler
+    timeout: 900
+    layers: ${self:custom.layers.default}
+    vpc: ${self:custom.vpc}
 
 resources:
   - ${file(cloudformation/vpc.yml)}

@@ -1,16 +1,16 @@
 Conditions:
-  IsProd: !Equals ["${self:provider.stage}", "prod"]
+  IsProd: !Equals ["${self:provider.stage}", "prd"]
 
 Resources:
   # DB login secret
   RDSInstanceSecret:
     Type: AWS::SecretsManager::Secret
     Properties:
-      Description: 'RDS master admin'
+      Description: "RDS master admin"
       Name: ${self:custom.secrets.rds}
       GenerateSecretString:
         SecretStringTemplate: '{"username": "dbadmin"}'
-        GenerateStringKey: 'password'
+        GenerateStringKey: "password"
         PasswordLength: 16
         ExcludeCharacters: '"@/\%:\\;'
 
@@ -39,10 +39,26 @@ Resources:
 
       DatabaseName: ${self:custom.db.dbname}
       DBClusterIdentifier: "#{AWS::StackName}"
-      MasterUsername: !Join ['', ['{{resolve:secretsmanager:', !Ref RDSInstanceSecret, ':SecretString:username}}' ]]
-      MasterUserPassword: !Join ['', ['{{resolve:secretsmanager:', !Ref RDSInstanceSecret, ':SecretString:password}}' ]]
+      MasterUsername:
+        !Join [
+          "",
+          [
+            "{{resolve:secretsmanager:",
+            !Ref RDSInstanceSecret,
+            ":SecretString:username}}",
+          ],
+        ]
+      MasterUserPassword:
+        !Join [
+          "",
+          [
+            "{{resolve:secretsmanager:",
+            !Ref RDSInstanceSecret,
+            ":SecretString:password}}",
+          ],
+        ]
       VpcSecurityGroupIds:
-      - "Fn::GetAtt": DBSecurityGroup.GroupId
+        - "Fn::GetAtt": DBSecurityGroup.GroupId
       DBSubnetGroupName: !Ref DBSubnetGroup
       # EnablePerformanceInsights: true
 

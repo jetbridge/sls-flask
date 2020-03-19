@@ -1,0 +1,18 @@
+repos:
+  - repo: https://github.com/ambv/black
+    rev: stable
+    hooks:
+      - id: black
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.4.0 # Use the ref you want to point at
+    hooks:
+      - id: detect-aws-credentials
+      - id: debug-statements
+      - id: check-merge-conflict
+      - id: flake8
+  - repo: git://github.com/luismayta/pre-commit-mypy
+    rev: b9595c1285cd8a9a032b7f759c75e08f74974bb6
+    hooks:
+      - id: mypy
+        args:
+          - --ignore-missing-imports

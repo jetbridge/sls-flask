@@ -8,4 +8,4 @@ def test_config():
 
 
 def test_db(db_session):
-    assert db_session.execute('SELECT 1').scalar() == 1, "test DB query failed"
+    assert db_session.execute("SELECT 1").scalar() == 1, "test DB query failed"

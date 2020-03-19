@@ -1,0 +1,50 @@
+name: Build and test
+
+on: [push]
+
+jobs:
+  Formatting:
+    runs-on: ubuntu-latest
+    name: Check Formatting
+    steps:
+      - uses: actions/checkout@v1
+      - name: "Check formatting: black"
+        uses: lgeiger/black-action@master
+        with:
+          args: ". --check"
+
+  Build-Test:
+    runs-on: ubuntu-latest
+    name: Build and Test
+    steps:
+      - uses: actions/checkout@v1
+      # environment
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+      - uses: harmon758/postgresql-action@v1
+        with:
+          postgresql version: "11.5-alpine"
+      - uses: dschep/install-poetry-action@v1.3
+      - name: "Install dependencies"
+        run: poetry install -n --no-ansi
+      - name: "Lint: flake8"
+        run: flake8 . --count --show-source --statistics
+      - name: "Test: pytest"
+        run: pytest
+        env:
+          TEST_DATABASE_URL: "postgresql://postgres@localhost/pytest"
+      - name: "Type checks: mypy"
+        uses: jpetrucciani/mypy-check@master
+
+  Bento:
+    runs-on: ubuntu-latest
+    name: Static Checks
+    steps:
+      - uses: actions/checkout@v1
+      - name: Bento
+        id: bento
+        uses: returntocorp/bento-action@v1
+        with:
+          acceptTermsWithEmail: me@myself.org

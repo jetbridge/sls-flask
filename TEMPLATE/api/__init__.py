@@ -1,4 +1,4 @@
-from flask_rest_api import Api
+from flask_smorest import Api
 
 api = Api()
 

@@ -1,5 +1,5 @@
 """Monitoring endpoints."""
-from flask_rest_api import Blueprint
+from flask_smorest import Blueprint
 from flask.views import MethodView
 from marshmallow import fields as f, Schema
 from TEMPLATE.db import db
