@@ -28,6 +28,7 @@ class Config:
     # set SQL_ECHO=1 this to echo queries to stderr
     SQLALCHEMY_ECHO = bool(os.getenv("SQL_ECHO"))
     DEBUG = os.getenv("DEBUG", False)
+    TESTING = bool(os.getenv("TESTING"))
     XRAY = bool(os.getenv("XRAY"))
 
     # openapi can be found at /api/openapi.json /api/doc
