@@ -87,3 +87,22 @@ Resources:
     Properties:
       InternetGatewayId: !Ref IGW
       VpcId: !Ref VPC
+
+  # SSH for bastion
+  BastionSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: '#{AWS::StackName}'
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: '0.0.0.0/0'
+        - IpProtocol: icmp
+          FromPort: -1
+          ToPort: -1
+          CidrIp: '0.0.0.0/0'
+      Tags:
+      - Key: Name
+        Value: '#{AWS::StackName}-BastionSecurityGroup'
