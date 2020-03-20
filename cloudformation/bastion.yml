@@ -165,7 +165,7 @@ Resources:
     CreationPolicy:
       ResourceSignal:
         Count: 1
-        Timeout: PT10M
+        Timeout: PT5M
     UpdatePolicy:
       AutoScalingRollingUpdate:
         PauseTime: PT10M
@@ -181,6 +181,8 @@ Resources:
     Condition: BastionEnabled
     Type: 'AWS::AutoScaling::LaunchConfiguration'
     Metadata:
+      # unused
+      # can be used to authenticate to fetch private bootstrap scripts from S3
       'AWS::CloudFormation::Authentication':
         S3AccessCreds:
           type: S3
@@ -195,7 +197,7 @@ Resources:
               mode: '000550'
               owner: root
               group: root
-              authentication: S3AccessCreds
+              # authentication: S3AccessCreds
             /home/ec2-user/.psqlrc:
               content: |
                 \set PROMPT1 '%[%033[1;31m%]%M%[%033[0m%]:%> %[%033[1;33m%]%n%[%033[0m%]@%/%R%#%x '
@@ -251,13 +253,13 @@ Resources:
             - !Ref BastionMainLogGroup
             - |+
 
-            - '/opt/aws/bin cfn-init -v --stack '
+            - '/opt/aws/bin/cfn-init -v --stack '
             - !Ref 'AWS::StackName'
             - ' --resource BastionLaunchConfiguration --region '
             - !Ref 'AWS::Region'
             - |+
 
-            - '/opt/aws/bin cfn-signal -e $? --stack '
+            - '/opt/aws/bin/cfn-signal -e $? --stack '
             - !Ref 'AWS::StackName'
             - ' --resource BastionAutoScalingGroup --region '
             - !Ref 'AWS::Region'
