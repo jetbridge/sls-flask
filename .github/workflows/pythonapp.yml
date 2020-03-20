@@ -34,7 +34,7 @@ jobs:
       - name: "Test: pytest"
         run: pytest
         env:
-          TEST_DATABASE_URI: "postgresql://postgres@localhost/pytest"
+          SQLALCHEMY_DATABASE_URI: "postgresql://postgres@localhost/pytest"
       - name: "Type checks: mypy"
         uses: jpetrucciani/mypy-check@master
 
