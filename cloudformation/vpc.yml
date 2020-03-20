@@ -1,5 +1,5 @@
 Resources:
-  ServerlessVPC:  # VPC to hold everything
+  VPC:  # VPC to hold everything
     Type: AWS::EC2::VPC
     Properties:
       Tags:
@@ -8,181 +8,107 @@ Resources:
       EnableDnsSupport: true  # disable for production
       EnableDnsHostnames: true  # disable for production
       CidrBlock: "10.0.0.0/16"
-  ServerlessSubnetA:
+  PublicSubnetA:
     Type: AWS::EC2::Subnet
     Properties:
       Tags:
         - Key: Name
-          Value: "#{AWS::StackName} Lambda"
+          Value: "#{AWS::StackName} Public"
       VpcId:
-        Ref: ServerlessVPC
+        Ref: VPC
       AvailabilityZone: "#{AWS::Region}a"
       CidrBlock: "10.0.3.0/24"
-  ServerlessSubnetB:
+  PublicSubnetB:
     Type: AWS::EC2::Subnet
     Properties:
       Tags:
         - Key: Name
-          Value: "#{AWS::StackName} Lambda"
+          Value: "#{AWS::StackName} Public"
       VpcId:
-        Ref: ServerlessVPC
+        Ref: VPC
       AvailabilityZone: "#{AWS::Region}b"
       CidrBlock: "10.0.1.0/24"
-  ServerlessSubnetC:
+  PublicSubnetC:
     Type: AWS::EC2::Subnet
     Properties:
       Tags:
         - Key: Name
-          Value: "#{AWS::StackName} Lambda"
+          Value: "#{AWS::StackName} Public"
       VpcId:
-        Ref: ServerlessVPC
+        Ref: VPC
       AvailabilityZone: "#{AWS::Region}c"
       CidrBlock: "10.0.2.0/24"
-  DBSubnetA:
-    Type: AWS::EC2::Subnet
-    Properties:
-      Tags:
-        - Key: Name
-          Value: "#{AWS::StackName} DB"
-      VpcId:
-        Ref: ServerlessVPC
-      AvailabilityZone: "#{AWS::Region}a"
-      CidrBlock: "10.0.6.0/24"
-  DBSubnetB:
-    Type: AWS::EC2::Subnet
-    Properties:
-      Tags:
-        - Key: Name
-          Value: "#{AWS::StackName} DB"
-      VpcId:
-        Ref: ServerlessVPC
-      AvailabilityZone: "#{AWS::Region}b"
-      CidrBlock: "10.0.7.0/24"
-  DBSubnetC:
-    Type: AWS::EC2::Subnet
-    Properties:
-      Tags:
-        - Key: Name
-          Value: "#{AWS::StackName} DB"
-      VpcId:
-        Ref: ServerlessVPC
-      AvailabilityZone: "#{AWS::Region}c"
-      CidrBlock: "10.0.8.0/24"
-  ServerlessSubnetPublic:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId:
-        Ref: ServerlessVPC
-      AvailabilityZone: "#{AWS::Region}a"
-      CidrBlock: "10.0.10.0/24"
-  ServerlessSecurityGroup:
+  PublicSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: SecurityGroup for Serverless Functions
+      GroupDescription: SecurityGroup for Public Functions
       VpcId:
-        Ref: ServerlessVPC
-  DBSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Ingress for RDS Instance
-      VpcId:
-        Ref: ServerlessVPC
-      SecurityGroupIngress:
-      - IpProtocol: tcp
-        FromPort: 5432
-        ToPort: 5432
-        SourceSecurityGroupId:
-          Ref: ServerlessSecurityGroup
-  ServerlessPrivateSubnetGroup:
+        Ref: VPC
+  PublicSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
     Properties:
       DBSubnetGroupDescription: "NAT-ed"
       SubnetIds:
-      - Ref: ServerlessSubnetA
-      - Ref: ServerlessSubnetB
-      - Ref: ServerlessSubnetC
-  DBSubnetGroup:
-    Type: AWS::RDS::DBSubnetGroup
-    Properties:
-      DBSubnetGroupDescription: "Database"
-      SubnetIds:
-      - Ref: DBSubnetA
-      - Ref: DBSubnetB
-      - Ref: DBSubnetC
-  NATIP:  # IP for public NAT
-    Type: AWS::EC2::EIP
-    Properties:
-      Domain: vpc
-  NatGateway:  # NAT GW in public subnet
-    Type: AWS::EC2::NatGateway
-    Properties:
-      AllocationId: !GetAtt NATIP.AllocationId
-      SubnetId: !Ref ServerlessSubnetPublic
-  PrivateRouteTable:  # Route table for internal routing
+      - Ref: PublicSubnetA
+      - Ref: PublicSubnetB
+      - Ref: PublicSubnetC
+
+  # NATIP:  # IP for public NAT
+  #   Type: AWS::EC2::EIP
+  #   Properties:
+  #     Domain: vpc
+  # NatGateway:  # NAT GW in public subnet
+  #   Type: AWS::EC2::NatGateway
+  #   Properties:
+  #     AllocationId: !GetAtt NATIP.AllocationId
+  #     SubnetId: !Ref PublicSubnetPublic
+  PublicRouteTable:  # Route table for internal routing + IGW
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !Ref ServerlessVPC
-      Tags:
-        - Key: Name
-          Value: "#{AWS::StackName} Private"
-  DefaultPrivateRoute:  # Route to provide internet access for private subnet (TODO: provide only for lambda, not RDS etc)
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref NatGateway
-  SubARouteTableAssociation:  # link private subnets to PrivateRouteTable
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable
-      SubnetId: !Ref ServerlessSubnetA
-  SubBRouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable
-      SubnetId: !Ref ServerlessSubnetB
-  SubCRouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable
-      SubnetId: !Ref ServerlessSubnetC
-  DBARouteTableAssociation:  # link DB subnets to routes
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref PublicRouteTable  # change to private to wall off from internet
-      SubnetId: !Ref DBSubnetA
-  DBBRouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref PublicRouteTable  # see above
-      SubnetId: !Ref DBSubnetB
-  DBCRouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref PublicRouteTable
-      SubnetId: !Ref DBSubnetC
-  IGW:  # Internet GateWay
-    Type: AWS::EC2::InternetGateway
-  ServerlessIGWAttachment:  # Connect IGW to Serverless VPC
-    Type: AWS::EC2::VPCGatewayAttachment
-    Properties:
-      InternetGatewayId: !Ref IGW
-      VpcId: !Ref ServerlessVPC
-  PublicRouteTable:  # Route table for routing to internet
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref ServerlessVPC
+      VpcId: !Ref VPC
       Tags:
         - Key: Name
           Value: "#{AWS::StackName} Public"
-  DefaultPublicRoute:  # Route to provide internet access from NAT to IGW
+  DefaultPublicRoute:
     Type: AWS::EC2::Route
     Properties:
       RouteTableId: !Ref PublicRouteTable
       DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref IGW
-  PublicRouteTableAssociation:  # connect public subnet (with NAT GW) to IGW
+      GatewayId: !Ref IGW  # may be wrong
+
+  PublicARouteTableAssociation:  # link public subnets to PublicRouteTable
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       RouteTableId: !Ref PublicRouteTable
-      SubnetId: !Ref ServerlessSubnetPublic
+      SubnetId: !Ref PublicSubnetA
+  PublicBRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnetB
+  PublicCRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnetC
+  IGW:  # Internet GateWay
+    Type: AWS::EC2::InternetGateway
+
+  IGWAttachment:  # Connect IGW to our VPC
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref IGW
+      VpcId: !Ref VPC
+
+  # PublicRouteTable:  # Route table for routing to internet
+  #   Type: AWS::EC2::RouteTable
+  #   Properties:
+  #     VpcId: !Ref VPC
+  #     Tags:
+  #       - Key: Name
+  #         Value: "#{AWS::StackName} Public"
+  # PublicRouteTableAssociation:  # connect public subnet (with NAT GW) to IGW
+  #   Type: AWS::EC2::SubnetRouteTableAssociation
+  #   Properties:
+  #     RouteTableId: !Ref PublicRouteTable
+  #     SubnetId: !Ref PublicSubnetPublic

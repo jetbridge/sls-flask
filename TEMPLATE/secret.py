@@ -32,7 +32,7 @@ def update_app_config(app, secret_name: str):
 
 
 def db_secret_to_url(secrets) -> str:
-    """Given a database secret construct a connection string for DATABASE_URL config."""
+    """Given a database secret construct a connection string for SQLALCHEMY_DATABASE_URI config."""
     password = secrets.get("password", "")
     dbname = secrets.get("dbname", "")
     engine = secrets.get("engine", "")

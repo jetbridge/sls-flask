@@ -82,7 +82,7 @@ def configure_database(app):
         aurora_cluster_arn = app.get_config_value_or_raise("AURORA_CLUSTER_ARN")
         db_name = app.get_config_value_or_raise("DATABASE_NAME")
         conn_url = f"postgresql+auroradataapi://:@/{db_name}"
-        app.config["DATABASE_URL"] = conn_url
+        app.config["SQLALCHEMY_DATABASE_URI"] = conn_url
 
         # augment connect_args
         connect_args = engine_opts.get("connect_args", {})
@@ -137,7 +137,7 @@ def configure_secrets(app):
         secret_name = app.config["RDS_SECRET_NAME"]
         rds_secrets = get_secret(secret_name=secret_name)
         # construct database connection string from secret
-        app.config["DATABASE_URL"] = db_secret_to_url(rds_secrets)
+        app.config["SQLALCHEMY_DATABASE_URI"] = db_secret_to_url(rds_secrets)
 
     if app.config.get("LOAD_APP_SECRETS"):
         # fetch app config secrets from Secrets Manager
@@ -159,10 +159,6 @@ def configure(app: App, test_config=None):
     else:
         configure_secrets(app)
         configure_instance(app)
-
-    # use 'DATABASE_URL' config for SQLAlchemy
-    if "DATABASE_URL" in config and "SQLALCHEMY_DATABASE_URI" not in config:
-        config["SQLALCHEMY_DATABASE_URI"] = config["DATABASE_URL"]
 
     if config.get("SQLALCHEMY_ECHO"):
         logging.basicConfig()

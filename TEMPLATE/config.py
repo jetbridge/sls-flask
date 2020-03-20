@@ -2,7 +2,7 @@ import os
 from datetime import timedelta
 import logging
 
-CONFIG_EXPECTED_KEYS = ("DATABASE_URL", "OPENAPI_VERSION", "JWT_SECRET_KEY")
+CONFIG_EXPECTED_KEYS = ("SQLALCHEMY_DATABASE_URI", "OPENAPI_VERSION", "JWT_SECRET_KEY")
 # use local "TEMPLATE" DB for local dev
 DEFAULT_DB_URL = "postgresql:///TEMPLATE"
 
@@ -22,7 +22,7 @@ class Config:
 
     DEV_DB_SCRIPTS_ENABLED = False  # can init-db/seed/etc be run?
 
-    DATABASE_URL = os.getenv("DATABASE_URL", DEFAULT_DB_URL)
+    SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI", DEFAULT_DB_URL)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # set SQL_ECHO=1 this to echo queries to stderr

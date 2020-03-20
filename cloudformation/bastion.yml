@@ -168,9 +168,9 @@ Resources:
         - 'autoscaling:EC2_INSTANCE_LAUNCH_ERROR'
         - 'autoscaling:EC2_INSTANCE_TERMINATE_ERROR'
       VPCZoneIdentifier:
-        - !Ref SubnetAPublic
-        - !Ref SubnetBPublic
-        - !Ref SubnetCPublic
+        - !Ref PublicSubnetA
+        - !Ref PublicSubnetB
+        - !Ref PublicSubnetC
     CreationPolicy:
       ResourceSignal:
         Count: 1

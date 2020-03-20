@@ -7,7 +7,7 @@
         "husky": "latest",
         "serverless": "latest",
         "serverless-pseudo-parameters": "latest",
-        "serverless-python-requirements": "latest",
-        "serverless-wsgi": "latest"
+        "serverless-python-requirements": "^5.1.0",
+        "serverless-wsgi": "^1.7.4"
     }
 }

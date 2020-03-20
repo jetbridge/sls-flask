@@ -11,7 +11,7 @@ custom:
   stackName: ${self:service}-${self:provider.stage}
   xray: false  # AWS Xray tracing of requests, queries. Set to 'Active' to actively trace.
   db:
-    dbname: "TEMPLATE"
+    dbname: "TEMPLATEx"
     minCapacity: 2
     maxCapacity: 4
     secondsUntilAutoPause: 43200 # if not stage=='prd'
@@ -22,16 +22,10 @@ custom:
   secrets:
     prefix: "${self:service}/${self:provider.stage}"
     rds: "${self:custom.secrets.prefix}/rds/credentials"
-  vpc:
-    securityGroupIds:
-      - "Fn::GetAtt": ServerlessSecurityGroup.GroupId
-    subnetIds:
-      - Ref: ServerlessSubnetA
-      - Ref: ServerlessSubnetB
-      - Ref: ServerlessSubnetC
-  bastion:  # EC2 host to access private network / DB
-#    sshKeyPairName: ''  # set this to enable bastion ec2 instance
-#    alertEmails: 'alertme@example.com'
+  bastion:  # EC2 host to access database
+    # sshKeyPairName: ''  # set this to enable bastion ec2 instance
+    sshKeyPairName: 'awsmish'  # set this to enable bastion ec2 instance
+    alertEmails: ''  # get SNS notifications of alarms at this address
     banner: https://ops.jetbridge.com/public/banner.txt
     bootstrap: https://ops.jetbridge.com/public/bastion_bootstrap.sh
     instanceType: t3a.nano
@@ -67,15 +61,13 @@ provider:
   tracing:
     lambda: ${self:custom.xray}
 
-  vpc: ${self:custom.vpc}
-
   environment:
     SECRET_PREFIX: ${self:custom.secrets.prefix}
 
     # aurora database credentials
     AURORA_SECRET_ARN: !Ref RDSInstanceSecret
     AURORA_CLUSTER_ARN: !Join [':', ["arn:aws:rds:#{AWS::Region}:#{AWS::AccountId}:cluster", !Ref DBCluster]]
-    DATABASE_URL: !Join ['/', ["postgresql+auroradataapi://:@", !Ref DBCluster]]
+    SQLALCHEMY_DATABASE_URI: !Join ['/', ["postgresql+auroradataapi://:@", !Ref DBCluster]]
     AURORA_DATA_API_ENABLED: 'true'
     DATABASE_NAME: !Ref DBCluster
 
@@ -117,26 +109,22 @@ functions:
       - http: "ANY {proxy+}"
     memorySize: 512
     layers: ${self:custom.layers.default}
-    vpc: ${self:custom.vpc}
     timeout: 10
 
   seed:
     handler: TEMPLATE.commands.seed_handler
     layers: ${self:custom.layers.default}
-    vpc: ${self:custom.vpc}
     timeout: 120
 
   initDb:
     handler: TEMPLATE.commands.init_handler
     layers: ${self:custom.layers.default}
-    vpc: ${self:custom.vpc}
     timeout: 300
 
   migrate:
     handler: TEMPLATE.commands.migrate_handler
     timeout: 900
     layers: ${self:custom.layers.default}
-    vpc: ${self:custom.vpc}
 
 resources:
   - ${file(cloudformation/vpc.yml)}
