@@ -27,6 +27,7 @@ nplusone = "*"
 psycopg2-binary = "*"
 requests = "*"
 sqlalchemy = "*"
+sqlalchemy-aurora-data-api = "^0.2.0"
 
 [tool.poetry.dev-dependencies]
 bento-cli = "*"

@@ -93,6 +93,9 @@ provider:
       Resource:
         - "arn:aws:secretsmanager:#{AWS::Region}:#{AWS::AccountId}:secret:${self:custom.secrets.prefix}/*"
         - "arn:aws:secretsmanager:#{AWS::Region}:#{AWS::AccountId}:secret:${self:custom.secrets.prefix}/dev-*"
+    - Effect: Allow
+      Action: rds-data:BeginTransaction
+      Resource: "arn:aws:rds:#{AWS::Region}:#{AWS::AccountId}:cluster:${self:custom.stackName}"
 
 package:
   exclude:
