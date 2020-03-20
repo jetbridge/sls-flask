@@ -5,8 +5,8 @@ Resources:
       Tags:
         - Key: "Name"
           Value: "#{AWS::StackName}"
-      EnableDnsSupport: false
-      EnableDnsHostnames: false
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
       CidrBlock: "10.0.0.0/16"
 
   # public subnet
