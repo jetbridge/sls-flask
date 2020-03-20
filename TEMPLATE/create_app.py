@@ -111,6 +111,23 @@ def configure_database(app: App) -> None:
         """
         db.session.remove()
 
+    if app.config.get("TESTING"):
+        return
+
+    test_db(app)
+
+
+def test_db(app: App) -> None:
+    # verify DB works
+    try:
+        with app.app_context():
+            db.session.execute("SELECT 1").scalar()
+    except Exception as ex:
+        log.error(
+            f"Database configuration is invalid. Using URI: {app.config['SQLALCHEMY_DATABASE_URI']}"
+        )
+        raise ex
+
 
 def configure_class(app: App) -> None:
     """Load class-based app configuration from config.py."""
