@@ -95,14 +95,6 @@ def configure_database(app: App) -> None:
     db.init_app(app)  # init sqlalchemy
     app.migrate = Migrate(app, db)  # alembic
 
-    # verify DB works
-    try:
-        with app.app_context():
-            db.session.execute("SELECT 1").scalar()
-    except Exception as ex:
-        log.error("Database configuration is invalid")
-        raise ex
-
     @app.teardown_appcontext
     def shutdown_session(exception=None):
         """Close session after request.

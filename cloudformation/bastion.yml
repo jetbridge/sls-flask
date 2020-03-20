@@ -137,7 +137,7 @@ Resources:
   BastionAutoScalingGroup:
     Condition: BastionEnabled
     Type: 'AWS::AutoScaling::AutoScalingGroup'
-    DependsOn: IGWAttachment  # needs internet access
+    DependsOn: IGWAttachment  # needs internet access - may be redundant
     Properties:
       DesiredCapacity: '1'
       LaunchConfigurationName: !Ref BastionLaunchConfiguration
@@ -159,7 +159,7 @@ Resources:
     CreationPolicy:
       ResourceSignal:
         Count: 1
-        Timeout: PT15M
+        Timeout: PT10M
     UpdatePolicy:
       AutoScalingRollingUpdate:
         PauseTime: PT10M
