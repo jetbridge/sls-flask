@@ -50,7 +50,11 @@ custom:
       # - boto3
       # - botocore
       - docutils
+    slimPatternsAppendDefaults: false
     slimPatterns:
+      - '**/*.py[c|o]'
+      - '**/__pycache__*'
+      - '**/*.egg-info*'
       # we don't need to call these services so let's not include the botocore metadata
       # it takes up a lot of space
       - botocore/data/ec2

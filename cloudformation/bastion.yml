@@ -171,10 +171,10 @@ Resources:
         - !Ref PublicSubnetA
         - !Ref PublicSubnetB
         - !Ref PublicSubnetC
-    CreationPolicy:
-      ResourceSignal:
-        Count: 1
-        Timeout: PT10M
+    # CreationPolicy:
+      # ResourceSignal:
+        # Count: 1
+        # Timeout: PT10M
     UpdatePolicy:
       AutoScalingRollingUpdate:
         PauseTime: PT10M
