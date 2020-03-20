@@ -74,7 +74,7 @@ Resources:
         FromPort: 5432
         ToPort: 5432
         # give access to our bastion host
-        SourceSecurityGroupId: !Ref PublicSecurityGroup
+        SourceSecurityGroupId: !Ref BastionSecurityGroup
 
   # VPC subnet
   DBSubnetA:
@@ -130,3 +130,8 @@ Outputs:
     Export:
       Name:
         "AuroraSecretARN"
+
+  GetDBSecretsCommand:
+    Description: Get DB secret command line
+    Condition: BastionEnabled
+    Value: "aws secretsmanager get-secret-value --secret-name ${self:custom.secrets.rds}"

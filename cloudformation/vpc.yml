@@ -1,13 +1,15 @@
 Resources:
-  VPC:  # VPC to hold everything
+  VPC:
     Type: AWS::EC2::VPC
     Properties:
       Tags:
         - Key: "Name"
           Value: "#{AWS::StackName}"
-      EnableDnsSupport: true  # disable for production
-      EnableDnsHostnames: true  # disable for production
+      EnableDnsSupport: false
+      EnableDnsHostnames: false
       CidrBlock: "10.0.0.0/16"
+
+  # public subnet
   PublicSubnetA:
     Type: AWS::EC2::Subnet
     Properties:
@@ -38,12 +40,6 @@ Resources:
         Ref: VPC
       AvailabilityZone: "#{AWS::Region}c"
       CidrBlock: "10.0.2.0/24"
-  PublicSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: SecurityGroup for Public Functions
-      VpcId:
-        Ref: VPC
   PublicSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
     Properties:
@@ -53,16 +49,8 @@ Resources:
       - Ref: PublicSubnetB
       - Ref: PublicSubnetC
 
-  # NATIP:  # IP for public NAT
-  #   Type: AWS::EC2::EIP
-  #   Properties:
-  #     Domain: vpc
-  # NatGateway:  # NAT GW in public subnet
-  #   Type: AWS::EC2::NatGateway
-  #   Properties:
-  #     AllocationId: !GetAtt NATIP.AllocationId
-  #     SubnetId: !Ref PublicSubnetPublic
-  PublicRouteTable:  # Route table for internal routing + IGW
+  # route public subnet to IGW
+  PublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref VPC
@@ -74,8 +62,7 @@ Resources:
     Properties:
       RouteTableId: !Ref PublicRouteTable
       DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref IGW  # may be wrong
-
+      GatewayId: !Ref IGW
   PublicARouteTableAssociation:  # link public subnets to PublicRouteTable
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
@@ -91,24 +78,12 @@ Resources:
     Properties:
       RouteTableId: !Ref PublicRouteTable
       SubnetId: !Ref PublicSubnetC
+
+  # internet gateway
   IGW:  # Internet GateWay
     Type: AWS::EC2::InternetGateway
-
   IGWAttachment:  # Connect IGW to our VPC
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
       InternetGatewayId: !Ref IGW
       VpcId: !Ref VPC
-
-  # PublicRouteTable:  # Route table for routing to internet
-  #   Type: AWS::EC2::RouteTable
-  #   Properties:
-  #     VpcId: !Ref VPC
-  #     Tags:
-  #       - Key: Name
-  #         Value: "#{AWS::StackName} Public"
-  # PublicRouteTableAssociation:  # connect public subnet (with NAT GW) to IGW
-  #   Type: AWS::EC2::SubnetRouteTableAssociation
-  #   Properties:
-  #     RouteTableId: !Ref PublicRouteTable
-  #     SubnetId: !Ref PublicSubnetPublic

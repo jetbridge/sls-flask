@@ -171,10 +171,10 @@ Resources:
         - !Ref PublicSubnetA
         - !Ref PublicSubnetB
         - !Ref PublicSubnetC
-    # CreationPolicy:
-      # ResourceSignal:
-        # Count: 1
-        # Timeout: PT10M
+    CreationPolicy:
+      ResourceSignal:
+        Count: 1
+        Timeout: PT10M
     UpdatePolicy:
       AutoScalingRollingUpdate:
         PauseTime: PT10M
@@ -330,3 +330,15 @@ Outputs:
                - '.pem" '
                - 'ec2-user@'
                - !Ref EIP
+
+  PSQLCommand:
+    Description: psql command line
+    Condition: BastionEnabled
+    Value: !Join
+             - ''
+             - - 'psql -h '
+               - !GetAtt DBCluster.Endpoint.Address
+               - ' -p '
+               - !GetAtt DBCluster.Endpoint.Port
+               - ' -U dbadmin '
+               - ${self:custom.db.dbname}
