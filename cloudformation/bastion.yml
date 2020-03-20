@@ -1,3 +1,6 @@
+# A EC2 host that is publicly accessible and can access internal VPC resources, such as the database.
+# Login is strictly controlled and monitored.
+
 Conditions:
   BastionEnabled: !Not [!Equals ["${self:custom.bastion.sshKeyPairName}", ""]]
 
@@ -134,6 +137,7 @@ Resources:
   BastionAutoScalingGroup:
     Condition: BastionEnabled
     Type: 'AWS::AutoScaling::AutoScalingGroup'
+    DependsOn: IGWAttachment  # needs internet access
     Properties:
       DesiredCapacity: '1'
       LaunchConfigurationName: !Ref BastionLaunchConfiguration

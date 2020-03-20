@@ -23,8 +23,8 @@ custom:
     prefix: "${self:service}/${self:provider.stage}"
     rds: "${self:custom.secrets.prefix}/rds/credentials"
   bastion:  # EC2 host to access database
-    # sshKeyPairName: ''  # set this to enable bastion ec2 instance
-    sshKeyPairName: 'ire19'  # set this to enable bastion ec2 instance
+    sshKeyPairName: ''  # set this to enable bastion ec2 instance
+    # sshKeyPairName: 'ire19'  # set this to enable bastion ec2 instance
     alertEmails: 'me@mydomain.xyz'  # get SNS notifications of alarms at this address
     banner: https://ops.jetbridge.com/public/banner.txt
     bootstrap: https://ops.jetbridge.com/public/bastion_bootstrap.sh
