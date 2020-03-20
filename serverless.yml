@@ -9,7 +9,7 @@ plugins:
 
 custom:
   stackName: ${self:service}-${self:provider.stage}
-  xray: false  # AWS Xray tracing of requests, queries. Set to 'Active' to actively trace.
+  xray: ''  # AWS Xray tracing of requests, queries. Set to 'Active' to actively trace.
   db:
     dbname: "TEMPLATEx"
     minCapacity: 2
@@ -24,8 +24,8 @@ custom:
     rds: "${self:custom.secrets.prefix}/rds/credentials"
   bastion:  # EC2 host to access database
     # sshKeyPairName: ''  # set this to enable bastion ec2 instance
-    sshKeyPairName: 'awsmish'  # set this to enable bastion ec2 instance
-    alertEmails: ''  # get SNS notifications of alarms at this address
+    sshKeyPairName: 'ire19'  # set this to enable bastion ec2 instance
+    alertEmails: 'me@mydomain.xyz'  # get SNS notifications of alarms at this address
     banner: https://ops.jetbridge.com/public/banner.txt
     bootstrap: https://ops.jetbridge.com/public/bastion_bootstrap.sh
     instanceType: t3a.nano
@@ -47,9 +47,30 @@ custom:
     noDeploy:
       - psycopg2 # provided by layer
       - psycopg2-binary # provided by layer
-      - boto3
-      - botocore
+      # - boto3
+      # - botocore
       - docutils
+    slimPatterns:
+      # we don't need to call these services so let's not include the botocore metadata
+      # it takes up a lot of space
+      - botocore/data/ec2
+      - botocore/data/rds
+      - botocore/data/iam
+      - botocore/data/s3
+      - botocore/data/cloudfront
+      - botocore/data/sagemaker
+      - botocore/data/ssm
+      - botocore/data/pinpoint
+      - botocore/data/mediaconvert
+      - botocore/data/elasticache
+      - botocore/data/medialive
+      - botocore/data/clouddirectory
+      - botocore/data/ecs
+      - botocore/data/gamelift
+      - botocore/data/glue
+      - botocore/data/lightsail
+      - botocore/data/redshift
+      - botocore/data/dynamodb
 
 provider:
   name: aws

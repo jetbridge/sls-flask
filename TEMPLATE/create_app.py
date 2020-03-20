@@ -5,26 +5,27 @@ Creates a new instance of our Flask app with plugins, blueprints, views, and con
 import logging
 import os
 
+import sqlalchemy_aurora_data_api  # noqa: F401
+from aws_xray_sdk.core import patcher, xray_recorder
+from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
 from flask import jsonify
+from flask_cors import CORS
+from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate, MigrateCommand
+from flask_script import Manager
+from nplusone.ext.flask_sqlalchemy import NPlusOne
+from typing import Optional
 
 from .api import api
 from .commands import init_cli
 from .db import db
-from .flask import App
-from .secret import update_app_config, db_secret_to_url, get_secret
-from aws_xray_sdk.core import patcher, xray_recorder
-from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
-from flask_cors import CORS
-from flask_jwt_extended import JWTManager
-from flask_script import Manager
-from nplusone.ext.flask_sqlalchemy import NPlusOne
-import sqlalchemy_aurora_data_api  # noqa: F401
+from .flaskapp import App
+from .secret import db_secret_to_url, get_secret, update_app_config
 
 log = logging.getLogger(__name__)
 
 
-def create_app(test_config=None) -> App:
+def create_app(test_config: Optional[dict] = None) -> App:
     app = App("TEMPLATE")
 
     # load config
@@ -47,7 +48,7 @@ def create_app(test_config=None) -> App:
     return app
 
 
-def init_auth(app):
+def init_auth(app: App) -> None:
     jwt = JWTManager(app)
 
     @jwt.user_loader_callback_loader
@@ -70,7 +71,7 @@ def init_auth(app):
         return user.id
 
 
-def configure_database(app):
+def configure_database(app: App) -> None:
     """Set up flask with SQLAlchemy."""
 
     # configure options for create_engine
@@ -111,7 +112,8 @@ def configure_database(app):
         db.session.remove()
 
 
-def configure_class(app):
+def configure_class(app: App) -> None:
+    """Load class-based app configuration from config.py."""
     config_class = os.getenv("TEMPLATE_CONFIG".upper())
 
     if not config_class:
@@ -131,7 +133,7 @@ def configure_class(app):
     app.config.from_object(config_class)
 
 
-def configure_secrets(app):
+def configure_secrets(app: App) -> None:
     if app.config.get("LOAD_RDS_SECRET"):
         # fetch db config secrets from Secrets Manager
         secret_name = app.config["RDS_SECRET_NAME"]
@@ -145,13 +147,13 @@ def configure_secrets(app):
         update_app_config(app, secret_name)
 
 
-def configure_instance(app):
+def configure_instance(app: App) -> None:
     # load 'instance.cfg'
     # if it exists as our local instance configuration override
     app.config.from_pyfile("instance.cfg", silent=True)
 
 
-def configure(app: App, test_config=None):
+def configure(app: App, test_config=None) -> None:
     configure_class(app)
     config = app.config
     if test_config:
@@ -170,7 +172,7 @@ def configure(app: App, test_config=None):
         raise Exception("Configuration is not valid.")
 
 
-def init_xray(app: App):
+def init_xray(app: App) -> None:
     if not app.config.get("XRAY"):
         return
     patcher.patch(("requests", "boto3"))  # xray tracing for external requests
