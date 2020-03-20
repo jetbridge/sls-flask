@@ -244,7 +244,7 @@ Resources:
             - |
               set -x
             - |
-              yum install -y postgresql96 &> /dev/null
+              yum install -y postgresql &> /dev/null
             - EIP_LIST="
             - !Ref EIP
             - |
