@@ -91,7 +91,13 @@ provider:
         - "arn:aws:secretsmanager:#{AWS::Region}:#{AWS::AccountId}:secret:${self:custom.secrets.prefix}/*"
         - "arn:aws:secretsmanager:#{AWS::Region}:#{AWS::AccountId}:secret:${self:custom.secrets.prefix}/dev-*"
     - Effect: Allow
-      Action: rds-data:BeginTransaction
+      Action:
+        - rds-data:ExecuteStatement
+        - rds-data:BatchExecuteStatement
+        - rds-data:BeginTransaction
+        - rds-data:RollbackTransaction
+        - rds-data:CommitTransaction
+        - rds-data:BeginTransaction
       Resource: "arn:aws:rds:#{AWS::Region}:#{AWS::AccountId}:cluster:${self:custom.stackName}"
 
 package:
