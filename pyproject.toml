@@ -24,10 +24,11 @@ marshmallow-enum = "*"
 marshmallow-sqlalchemy = "*"
 nplusone = "*"
 psycopg2-binary = "*"
-requests = "*"
-sqlalchemy = "*"
+aurora-data-api = "*"
 sqlalchemy-aurora-data-api = "^0.2.0"
+sqlalchemy = "*"
 python-dateutil = "==2.8.0"
+requests = "*"
 
 [tool.poetry.dev-dependencies]
 bento-cli = "*"
