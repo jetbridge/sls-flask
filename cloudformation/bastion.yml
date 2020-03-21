@@ -236,6 +236,9 @@ Resources:
       SecurityGroups:
         - !Ref BastionSecurityGroup
       InstanceType: ${self:custom.bastion.instanceType}
+      # cloud-init script
+      # install postgresql
+      # signal cloudformation that we've initialized correctly
       UserData: !Base64
         'Fn::Join':
           - ''
