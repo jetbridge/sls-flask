@@ -41,7 +41,6 @@ custom:
     app: app.app
     packRequirements: false
   pythonRequirements:
-    dockerizePip: false
     useDownloadCache: true
     useStaticCache: true
     noDeploy:
