@@ -22,6 +22,8 @@ custom:
   secrets:
     prefix: "${self:service}/${self:provider.stage}"
     rds: "${self:custom.secrets.prefix}/rds/credentials"
+  network:
+    classB: 10 # second octet of VPC CIDR block (10.classB.0.0/16)
   bastion:  # EC2 host to access database
     # sshKeyPairName: ''  # set this to enable bastion ec2 instance
     sshKeyPairName: 'ire19'  # set this to enable bastion ec2 instance
@@ -55,12 +57,9 @@ custom:
       - '**/*.py[c|o]'
       - '**/__pycache__*'
       - '**/*.egg-info*'
-      # we don't need to call these services so let's not include the botocore metadata
-      # it takes up a lot of space
+      # save some space for boto services we don't need to call
       - botocore/data/ec2
-      - botocore/data/rds
       - botocore/data/iam
-      - botocore/data/s3
       - botocore/data/cloudfront
       - botocore/data/sagemaker
       - botocore/data/ssm
@@ -74,7 +73,6 @@ custom:
       - botocore/data/glue
       - botocore/data/lightsail
       - botocore/data/redshift
-      - botocore/data/dynamodb
 
 provider:
   name: aws

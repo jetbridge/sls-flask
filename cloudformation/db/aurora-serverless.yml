@@ -62,74 +62,14 @@ Resources:
         - "Fn::GetAtt": DBSecurityGroup.GroupId
       DBSubnetGroupName: !Ref DBSubnetGroup
 
-  # VPC security group
-  DBSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Ingress for RDS Instance
-      VpcId:
-        Ref: VPC
-      SecurityGroupIngress:
-      - IpProtocol: tcp
-        FromPort: 5432
-        ToPort: 5432
-        # give access to our bastion host
-        SourceSecurityGroupId: !Ref BastionSecurityGroup
-
-  # VPC subnet
-  DBSubnetA:
-    Type: AWS::EC2::Subnet
-    Properties:
-      Tags:
-        - Key: Name
-          Value: "#{AWS::StackName} DB"
-      VpcId:
-        Ref: VPC
-      AvailabilityZone: "#{AWS::Region}a"
-      CidrBlock: "10.0.6.0/24"
-  DBSubnetB:
-    Type: AWS::EC2::Subnet
-    Properties:
-      Tags:
-        - Key: Name
-          Value: "#{AWS::StackName} DB"
-      VpcId:
-        Ref: VPC
-      AvailabilityZone: "#{AWS::Region}b"
-      CidrBlock: "10.0.7.0/24"
-  DBSubnetC:
-    Type: AWS::EC2::Subnet
-    Properties:
-      Tags:
-        - Key: Name
-          Value: "#{AWS::StackName} DB"
-      VpcId:
-        Ref: VPC
-      AvailabilityZone: "#{AWS::Region}c"
-      CidrBlock: "10.0.8.0/24"
-  DBSubnetGroup:
-    Type: AWS::RDS::DBSubnetGroup
-    Properties:
-      DBSubnetGroupDescription: "Database"
-      SubnetIds:
-      - Ref: DBSubnetA
-      - Ref: DBSubnetB
-      - Ref: DBSubnetC
-
-
 Outputs:
   AuroraClusterARN:
     Description: Aurora Cluster ARN
     Value: !Join [':', ["arn:aws:rds:#{AWS::Region}:#{AWS::AccountId}:cluster", !Ref DBCluster]]
-    Export:
-      Name: "AuroraClusterARN"
 
   AuroraSecretARN:
     Description: Aurora Secret ARN
     Value: !Ref RDSInstanceSecret
-    Export:
-      Name:
-        "AuroraSecretARN"
 
   GetDBSecretsCommand:
     Description: Get DB secret command line
