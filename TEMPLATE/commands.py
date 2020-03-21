@@ -79,5 +79,8 @@ def seed_handler(event, context):
 
 
 def migrate_handler(event, context):
-    flask_migrate.upgrade()
+    from TEMPLATE.app import app
+
+    with app.app_context():
+        flask_migrate.upgrade()
     return "Migrated"

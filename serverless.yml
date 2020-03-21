@@ -11,7 +11,7 @@ custom:
   stackName: ${self:service}-${self:provider.stage}
   xray: ''  # AWS Xray tracing of requests, queries. Set to 'Active' to actively trace.
   db:
-    dbname: "TEMPLATEx"
+    dbname: ${self:custom.stackName}
     minCapacity: 2
     maxCapacity: 4
     secondsUntilAutoPause: 43200 # if not stage=='prd'
@@ -26,7 +26,6 @@ custom:
     classB: 10 # second octet of VPC CIDR block (10.classB.0.0/16)
   bastion:  # EC2 host to access database
     # sshKeyPairName: ''  # set this to enable bastion ec2 instance
-    sshKeyPairName: 'ire19'  # set this to enable bastion ec2 instance
     alertEmails: 'me@mydomain.xyz'  # get SNS notifications of alarms at this address
     banner: https://ops.jetbridge.com/public/banner.txt
     bootstrap: https://ops.jetbridge.com/public/bastion_bootstrap.sh
@@ -48,31 +47,15 @@ custom:
     noDeploy:
       - psycopg2 # provided by layer
       - psycopg2-binary # provided by layer
-      # - boto3
-      # - botocore
+      - boto3
+      - botocore
+      - s3transfere
       - docutils
     slim: true
     slimPatternsAppendDefaults: false  # need dist-info for sqlalchemy plugin
     slimPatterns:
       - '**/*.py[c|o]'
       - '**/__pycache__*'
-      - '**/*.egg-info*'
-      # save some space for boto services we don't need to call
-      - botocore/data/ec2
-      - botocore/data/iam
-      - botocore/data/cloudfront
-      - botocore/data/sagemaker
-      - botocore/data/ssm
-      - botocore/data/pinpoint
-      - botocore/data/mediaconvert
-      - botocore/data/elasticache
-      - botocore/data/medialive
-      - botocore/data/clouddirectory
-      - botocore/data/ecs
-      - botocore/data/gamelift
-      - botocore/data/glue
-      - botocore/data/lightsail
-      - botocore/data/redshift
 
 provider:
   name: aws

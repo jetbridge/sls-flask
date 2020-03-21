@@ -57,16 +57,10 @@ make hooks  # install pre-commit hooks
 
 ```
 createdb TEMPLATE
-flask init-db  # recreate schema from models
+flask db upgrade  # run migrations
 flask seed  # populate with sample data
-```
-
-### Migrations:
-
-```
-flask db  # migration commands
-flask db upgrade  # apply migrations
 flask db migrate  # generate new migration
+flask db  # more migration commands
 ```
 
 ### API Documentation:
