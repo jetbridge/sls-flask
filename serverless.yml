@@ -49,7 +49,7 @@ custom:
       - psycopg2-binary # provided by layer
       - boto3
       - botocore
-      - s3transfere
+      - s3transfer
       - docutils
     slim: true
     slimPatternsAppendDefaults: false  # need dist-info for sqlalchemy plugin
