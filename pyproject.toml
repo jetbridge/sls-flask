@@ -33,8 +33,6 @@ bento-cli = "*"
 black = "^19.3b0"
 cfn-lint = "*"
 flake8 = "*"
-flask-shell-ipython = "*"
-ipdb = "*"
 mypy = "*"
 pre-commit = "*"
 pytest = "*"
@@ -42,9 +40,9 @@ pytest-factoryboy = "*"
 pytest-flask-sqlalchemy = "*"
 pytest-postgresql = "*"
 pytest-xdist = "*"
-sphinx = "*"
-sphinx-autodoc-typehints = "*"
-sphinx-rtd-theme = "*"
+
+[tool.poetry.extras]
+doc = ["sphinx", "sphinx-autodoc-typehints", "sphinx-rtd-theme"]
 
 [build-system]
 requires = ["poetry>=0.12"]

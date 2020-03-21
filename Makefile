@@ -31,6 +31,11 @@ cfn-lint:
 	npm run sls-package
 	cfn-lint
 
+# documentation
+doc:
+	poetry install --extras "doc"
+	$(MAKE) -C doc html
+
 # init DB
 idb: dropcreatedb migrate seed
 
