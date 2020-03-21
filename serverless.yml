@@ -25,7 +25,7 @@ custom:
   network:
     classB: 10 # second octet of VPC CIDR block (10.classB.0.0/16)
   bastion:  # EC2 host to access database
-    # sshKeyPairName: ''  # set this to enable bastion ec2 instance
+    sshKeyPairName: ''  # set this to enable bastion ec2 instance
     alertEmails: 'me@mydomain.xyz'  # get SNS notifications of alarms at this address
     banner: https://ops.jetbridge.com/public/banner.txt
     bootstrap: https://ops.jetbridge.com/public/bastion_bootstrap.sh
