@@ -46,13 +46,13 @@ dropcreatedb:
 migrate:
 	flask db upgrade
 
-deploy-dev:
-	sls deploy --stage dev
-	sls --stage dev invoke -f migrate
+deploy-qa:
+	sls deploy --stage qa
+	sls --stage qa invoke -f migrate
 
-seed-dev: deploy-dev
-	sls --stage dev invoke -f seed
+seed-qa: deploy-qa
+	sls --stage qa invoke -f seed
 
-deploy-prod:
-	sls deploy --stage prod
-	sls --stage dev invoke -f migrate
+deploy-prd:
+	sls deploy --stage prd
+	sls --stage prd invoke -f migrate

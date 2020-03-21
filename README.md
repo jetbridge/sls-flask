@@ -2,6 +2,8 @@
 
 Comes with a lot of useful stuff ready to go.
 
+Designed for serverless API development with PostgreSQL.
+
 ## Features
 
 - [Flask Smorest](https://pypi.org/project/flask-smorest/)
@@ -10,9 +12,12 @@ Comes with a lot of useful stuff ready to go.
   - Redoc
 - [Pytest using database subtransactions](https://pypi.org/project/pytest-flask-sqlalchemy/) for test isolation
 - [Pytest-FactoryBoy](https://pytest-factoryboy.readthedocs.io/en/latest/#model-fixture) for generating sample data for seeding DB and tests.
-- Flake8 with [Mypy](http://mypy-lang.org/) for type-checking
+- Flake8 for linting
+- [Mypy](http://mypy-lang.org/) for type-checking
+- [Black](https://black.readthedocs.io/en/stable/) for formatting
 - AWS Lambda integration
   - [Serverless AWS](https://serverless.com/framework/docs/providers/aws/)
+  - [AWS Aurora Serverless Postgres](https://aws.amazon.com/rds/aurora/serverless/) for on-demand Postgresql DB with a [data-api query driver](https://github.com/chanzuckerberg/sqlalchemy-aurora-data-api#motivation).
   - Load Flask config from AWS Secrets Manager
 - [Flask-Migrate](https://flask-migrate.readthedocs.io/en/latest/) for DB migrations with alembic and Flask CLI
 - [Poetry](https://python-poetry.org/docs/) for dependency management
@@ -41,26 +46,29 @@ poetry shell  # activate python virtual environment
 poetry install  # install dependencies
 ```
 
-### Do Stuff:
+### Run Dev Server:
 
 ```
 flask  # CLI commands
-flask run --reload  # run flask dev server
-npm install  # install serverless plugins
-sls wsgi serve  # run flask server under serverless
-sls deploy  # deploy serverless app
-make deploy-dev  # deploy dev to AWS and reset database
-make hooks  # install pre-commit hooks
+make run  # run flask dev server
+sls wsgi serve  # run flask dev server under serverless
 ```
 
-### Database:
 
+### Database:
+Using Postgresql.
 ```
 createdb TEMPLATE
 flask db upgrade  # run migrations
 flask seed  # populate with sample data
 flask db migrate  # generate new migration
 flask db  # more migration commands
+```
+
+### Deploy:
+```
+make deploy-qa   # deploy to AWS and run migrations
+make deploy-prd  # deploy to AWS and run migrations
 ```
 
 ### API Documentation:
