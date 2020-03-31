@@ -74,4 +74,4 @@ Outputs:
   GetDBSecretsCommand:
     Description: Get DB secret command line
     Condition: BastionEnabled
-    Value: "aws secretsmanager get-secret-value --secret-name ${self:custom.secrets.rds}"
+    Value: "aws secretsmanager get-secret-value --secret-id ${self:custom.secrets.rds}"

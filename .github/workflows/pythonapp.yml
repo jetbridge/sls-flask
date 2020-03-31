@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Check Formatting
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: "Check formatting: black"
         uses: lgeiger/black-action@master
         with:
@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Test
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       # environment
       - name: Set up Python 3.8
         uses: actions/setup-python@v1
@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Static Checks
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Bento
         id: bento
         uses: returntocorp/bento-action@v1

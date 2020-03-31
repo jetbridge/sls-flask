@@ -63,6 +63,7 @@ Resources:
     Type: 'AWS::Logs::LogGroup'
     Condition: BastionEnabled
     Properties:
+      LogGroupName: "${self:custom.stackName}-bastion"
       RetentionInDays: ${self:custom.bastion.logRetentionInDays}
 
   SSHMetricFilter:
