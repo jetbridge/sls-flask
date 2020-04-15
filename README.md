@@ -67,7 +67,7 @@ flask db  # more migration commands
 
 ### Deploy:
 ```
-make deploy-qa   # deploy to AWS and run migrations
+make deploy-dev   # deploy to AWS and run migrations
 make deploy-prd  # deploy to AWS and run migrations
 ```
 
