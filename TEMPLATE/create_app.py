@@ -73,7 +73,6 @@ def init_auth(app: App) -> None:
 
 def configure_database(app: App) -> None:
     """Set up flask with SQLAlchemy."""
-
     # configure options for create_engine
     engine_opts = app.config.get("SQLALCHEMY_ENGINE_OPTIONS", {})
 
