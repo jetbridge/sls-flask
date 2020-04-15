@@ -5,7 +5,7 @@ description = "Project description."
 authors = ["My Name <me@myself.com>"]
 
 [tool.poetry.dependencies]
-python = "~3.7"
+python = "^3.8.0"
 apispec = "*"
 aws-xray-sdk = "*"
 boto3 = "*"
