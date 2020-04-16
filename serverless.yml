@@ -11,7 +11,7 @@ custom:
   stackName: ${self:service}-${self:provider.stage}
   xray: ''  # AWS Xray tracing of requests, queries. Set to 'Active' to actively trace.
   db:
-    dbname: TEMPLATEx
+    dbname: TEMPLATE
     minCapacity: 2
     maxCapacity: 4
     secondsUntilAutoPause: 7200  # if not stage=='prd'

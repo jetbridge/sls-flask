@@ -20,11 +20,11 @@ Resources:
       - Key: Name
         Value: '#{AWS::StackName}-BastionSecurityGroup'
 
-  # lambdas (if in VPC)
+  # lambdas
   LambdaSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: SecurityGroup for Lambda Functions
+      GroupDescription: Lambda Functions
       VpcId: !Ref VPC
       Tags:
       - Key: Name
