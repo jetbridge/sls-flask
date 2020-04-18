@@ -17,9 +17,9 @@ LOCALE = "en_US"
 
 # Retrieve a database connection string from the environment
 # should be a DB that doesn't exist
-DB_CONN = os.getenv("TEST_DATABASE_URL", "postgresql:///TEMPLATE_test".lower())
+DB_CONN = os.getenv("SQLALCHEMY_DATABASE_URI", "postgresql:///TEMPLATE_test".lower())
 DB_OPTS = sa.engine.url.make_url(DB_CONN).translate_connect_args()
-DB_VERSION = "10.10"
+DB_VERSION = "11.5"
 
 
 @pytest.fixture(scope="session")
@@ -38,7 +38,7 @@ def database(request):
 def app(database):
     """Create a Flask app context for tests."""
     # override config for test app here
-    app = create_app(dict(SQLALCHEMY_DATABASE_URI=DB_CONN, TESTING=True))
+    app = create_app(test_config=dict(SQLALCHEMY_DATABASE_URI=DB_CONN, TESTING=True))
     init_views()
 
     with app.app_context():

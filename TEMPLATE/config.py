@@ -2,7 +2,7 @@ import os
 from datetime import timedelta
 import logging
 
-CONFIG_EXPECTED_KEYS = ("DATABASE_URL", "OPENAPI_VERSION", "JWT_SECRET_KEY")
+CONFIG_EXPECTED_KEYS = ("SQLALCHEMY_DATABASE_URI", "OPENAPI_VERSION", "JWT_SECRET_KEY")
 # use local "TEMPLATE" DB for local dev
 DEFAULT_DB_URL = "postgresql:///TEMPLATE"
 
@@ -12,18 +12,25 @@ class Config:
 
     # load more config from secrets manager?
     LOAD_APP_SECRETS = os.getenv("LOAD_APP_SECRETS", False)
+    APP_SECRETS_NAME = os.getenv("APP_SECRETS_NAME", "TEMPLATE/dev")
     LOAD_RDS_SECRETS = os.getenv("LOAD_RDS_SECRETS", False)
-    SECRETS_NAME = os.getenv("APP_SECRETS_NAME", "TEMPLATE/dev")
     RDS_SECRETS_NAME = os.getenv("RDS_SECRETS_NAME")
+
+    # use aurora data API?
+    AURORA_SECRET_ARN = os.getenv("AURORA_SECRET_ARN")
+    AURORA_CLUSTER_ARN = os.getenv("AURORA_CLUSTER_ARN")
+    DATABASE_NAME = os.getenv("DATABASE_NAME")
+    AURORA_DATA_API_ENABLED = os.getenv("AURORA_DATA_API_ENABLED", False)
 
     DEV_DB_SCRIPTS_ENABLED = False  # can init-db/seed/etc be run?
 
-    DATABASE_URL = os.getenv("DATABASE_URL", DEFAULT_DB_URL)
+    SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI", DEFAULT_DB_URL)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # set SQL_ECHO=1 this to echo queries to stderr
     SQLALCHEMY_ECHO = bool(os.getenv("SQL_ECHO"))
     DEBUG = os.getenv("DEBUG", False)
+    TESTING = bool(os.getenv("TESTING"))
     XRAY = bool(os.getenv("XRAY"))
 
     # openapi can be found at /api/openapi.json /api/doc
@@ -32,7 +39,7 @@ class Config:
     OPENAPI_JSON_PATH = "openapi.json"
     OPENAPI_REDOC_PATH = "/doc"
     OPENAPI_SWAGGER_UI_PATH = "/swagger"
-    OPENAPI_SWAGGER_UI_VERSION = "3.23.11"
+    OPENAPI_SWAGGER_UI_VERSION = "3.24.2"  # https://cdnjs.com/libraries/swagger-ui
     # https://swagger.io/docs/specification/authentication/bearer-authentication/
     API_SPEC_OPTIONS = {
         "components": {
@@ -60,8 +67,8 @@ class LocalDevConfig(Config):
     DEV_DB_SCRIPTS_ENABLED = True
 
 
-class QAConfig(Config):
-    """AWS QA environment and DB."""
+class DevConfig(Config):
+    """AWS dev environment and DB."""
 
     DEV_DB_SCRIPTS_ENABLED = True
 
@@ -83,7 +90,7 @@ class ConfigurationInvalidError(Exception):
         self.message = message
 
     def __str__(self):
-        return self.message + f"\nEnvironment: {os.environ}"
+        return self.message  # + f"\nEnvironment: {os.environ}"
 
 
 class ConfigurationKeyMissingError(ConfigurationInvalidError):

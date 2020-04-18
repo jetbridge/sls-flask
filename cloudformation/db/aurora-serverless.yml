@@ -30,10 +30,11 @@ Resources:
       DeletionProtection: !If [IsProd, true, false]
       Engine: aurora-postgresql
       EngineMode: serverless
+      EnableHttpEndpoint: true
       ScalingConfiguration:
         AutoPause: !If [IsProd, false, true]
-        MaxCapacity: ${self:custom.db.maxCapacity}
         MinCapacity: ${self:custom.db.minCapacity}
+        MaxCapacity: ${self:custom.db.maxCapacity}
         SecondsUntilAutoPause: ${self:custom.db.secondsUntilAutoPause}
 
       DatabaseName: ${self:custom.db.dbname}
@@ -59,4 +60,17 @@ Resources:
       VpcSecurityGroupIds:
         - "Fn::GetAtt": DBSecurityGroup.GroupId
       DBSubnetGroupName: !Ref DBSubnetGroup
-      # EnablePerformanceInsights: true
+
+Outputs:
+  AuroraClusterARN:
+    Description: Aurora Cluster ARN
+    Value: !Join [':', ["arn:aws:rds:#{AWS::Region}:#{AWS::AccountId}:cluster", !Ref DBCluster]]
+
+  AuroraSecretARN:
+    Description: Aurora Secret ARN
+    Value: !Ref RDSInstanceSecret
+
+  GetDBSecretsCommand:
+    Description: Get DB secret command line
+    Condition: BastionEnabled
+    Value: "aws secretsmanager get-secret-value --secret-id ${self:custom.secrets.rds}"

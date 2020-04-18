@@ -2,10 +2,10 @@
 name = "TEMPLATE"
 version = "0.1.0"
 description = "Project description."
-authors = ["My Name me@myself.com"]
+authors = ["My Name <me@myself.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8.0"
 apispec = "*"
 aws-xray-sdk = "*"
 boto3 = "*"
@@ -15,7 +15,6 @@ flask = "*"
 flask-cors = "*"
 flask-jwt-extended = "*"
 flask-migrate = "*"
-flask-rest-api = "*"
 flask-script = "*"
 flask-smorest = "*"
 flask-sqlalchemy = "*"
@@ -25,27 +24,28 @@ marshmallow-enum = "*"
 marshmallow-sqlalchemy = "*"
 nplusone = "*"
 psycopg2-binary = "*"
-requests = "*"
+aurora-data-api = "*"
+sqlalchemy-aurora-data-api = "*"
 sqlalchemy = "*"
+python-dateutil = "==2.8.0"
+requests = "*"
 
 [tool.poetry.dev-dependencies]
 bento-cli = "*"
 black = "^19.3b0"
 cfn-lint = "*"
 flake8 = "*"
-flask-shell-ipython = "*"
-ipdb = "*"
+flake8-docstrings = "^1.5.0"
 mypy = "*"
-pre-commit = "*"
+pre-commit = "1.18.3"
 pytest = "*"
 pytest-factoryboy = "*"
 pytest-flask-sqlalchemy = "*"
 pytest-postgresql = "*"
 pytest-xdist = "*"
-sphinx = "*"
-sphinx-autodoc-typehints = "*"
-sphinx-rtd-theme = "*"
-flake8-docstrings = "^1.5.0"
+
+[tool.poetry.extras]
+doc = ["sphinx", "sphinx-autodoc-typehints", "sphinx-rtd-theme"]
 
 [build-system]
 requires = ["poetry>=0.12"]

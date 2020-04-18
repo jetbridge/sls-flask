@@ -5,25 +5,27 @@ Creates a new instance of our Flask app with plugins, blueprints, views, and con
 import logging
 import os
 
+import sqlalchemy_aurora_data_api  # noqa: F401
+from aws_xray_sdk.core import patcher, xray_recorder
+from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
 from flask import jsonify
+from flask_cors import CORS
+from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate, MigrateCommand
+from flask_script import Manager
+from nplusone.ext.flask_sqlalchemy import NPlusOne
+from typing import Optional
 
 from .api import api
 from .commands import init_cli
 from .db import db
-from .flask import App
-from .secret import update_app_config, db_secret_to_url, get_secret
-from aws_xray_sdk.core import patcher, xray_recorder
-from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
-from flask_cors import CORS
-from flask_jwt_extended import JWTManager
-from flask_script import Manager
-from nplusone.ext.flask_sqlalchemy import NPlusOne
+from .flaskapp import App
+from .secret import db_secret_to_url, get_secret, update_app_config
 
 log = logging.getLogger(__name__)
 
 
-def create_app(test_config=None) -> App:
+def create_app(test_config: Optional[dict] = None) -> App:
     app = App("TEMPLATE")
 
     # load config
@@ -46,7 +48,7 @@ def create_app(test_config=None) -> App:
     return app
 
 
-def init_auth(app):
+def init_auth(app: App) -> None:
     jwt = JWTManager(app)
 
     @jwt.user_loader_callback_loader
@@ -69,8 +71,26 @@ def init_auth(app):
         return user.id
 
 
-def configure_database(app):
+def configure_database(app: App) -> None:
     """Set up flask with SQLAlchemy."""
+    # configure options for create_engine
+    engine_opts = app.config.get("SQLALCHEMY_ENGINE_OPTIONS", {})
+
+    if app.config.get("AURORA_DATA_API_ENABLED"):
+        # configure sqlalchemy-aurora-data-api
+        rds_secret_arn = app.get_config_value_or_raise("AURORA_SECRET_ARN")
+        aurora_cluster_arn = app.get_config_value_or_raise("AURORA_CLUSTER_ARN")
+        db_name = app.get_config_value_or_raise("DATABASE_NAME")
+        conn_url = f"postgresql+auroradataapi://:@/{db_name}"
+        app.config["SQLALCHEMY_DATABASE_URI"] = conn_url
+
+        # augment connect_args
+        connect_args = engine_opts.get("connect_args", {})
+        connect_args["aurora_cluster_arn"] = aurora_cluster_arn
+        connect_args["secret_arn"] = rds_secret_arn
+        engine_opts["connect_args"] = connect_args
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = engine_opts
+
     db.init_app(app)  # init sqlalchemy
     app.migrate = Migrate(app, db)  # alembic
 
@@ -82,8 +102,26 @@ def configure_database(app):
         """
         db.session.remove()
 
+    if app.config.get("TESTING"):
+        return
 
-def configure_class(app):
+    test_db(app)
+
+
+def test_db(app: App) -> None:
+    # verify DB works
+    try:
+        with app.app_context():
+            db.session.execute("SELECT 1").scalar()
+    except Exception as ex:
+        log.error(
+            f"Database configuration is invalid. Using URI: {app.config['SQLALCHEMY_DATABASE_URI']}"
+        )
+        raise ex
+
+
+def configure_class(app: App) -> None:
+    """Load class-based app configuration from config.py."""
     config_class = os.getenv("TEMPLATE_CONFIG".upper())
 
     if not config_class:
@@ -95,7 +133,7 @@ def configure_class(app):
             if stage == "prd":
                 config_class = "TEMPLATE.config.ProductionConfig"
             else:
-                config_class = "TEMPLATE.config.QAConfig"
+                config_class = "TEMPLATE.config.DevConfig"
         else:
             # local dev
             config_class = "TEMPLATE.config.LocalDevConfig"
@@ -103,13 +141,14 @@ def configure_class(app):
     app.config.from_object(config_class)
 
 
-def configure_secrets(app):
+def configure_secrets(app: App) -> None:
     if app.config.get("LOAD_RDS_SECRETS"):
         # fetch db config secrets from Secrets Manager
         secret_name = app.config["RDS_SECRETS_NAME"]
+        assert secret_name, "RDS_SECRETS_NAME missing"
         rds_secrets = get_secret(secret_name=secret_name)
         # construct database connection string from secret
-        app.config["DATABASE_URL"] = db_secret_to_url(rds_secrets)
+        app.config["SQLALCHEMY_DATABASE_URI"] = db_secret_to_url(rds_secrets)
 
     if app.config.get("LOAD_APP_SECRETS"):
         # fetch app config secrets from Secrets Manager
@@ -117,13 +156,13 @@ def configure_secrets(app):
         update_app_config(app, secret_name)
 
 
-def configure_instance(app):
+def configure_instance(app: App) -> None:
     # load 'instance.cfg'
     # if it exists as our local instance configuration override
     app.config.from_pyfile("instance.cfg", silent=True)
 
 
-def configure(app: App, test_config=None):
+def configure(app: App, test_config=None) -> None:
     configure_class(app)
     config = app.config
     if test_config:
@@ -131,10 +170,6 @@ def configure(app: App, test_config=None):
     else:
         configure_secrets(app)
         configure_instance(app)
-
-    # use 'DATABASE_URL' config for SQLAlchemy
-    if "DATABASE_URL" in config and "SQLALCHEMY_DATABASE_URI" not in config:
-        config["SQLALCHEMY_DATABASE_URI"] = config["DATABASE_URL"]
 
     if config.get("SQLALCHEMY_ECHO"):
         logging.basicConfig()
@@ -146,7 +181,7 @@ def configure(app: App, test_config=None):
         raise Exception("Configuration is not valid.")
 
 
-def init_xray(app: App):
+def init_xray(app: App) -> None:
     if not app.config.get("XRAY"):
         return
     patcher.patch(("requests", "boto3"))  # xray tracing for external requests

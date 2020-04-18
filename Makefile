@@ -1,4 +1,4 @@
-.PHONY: init init-from-template run hooks seed test check cfn-lint ldb init-db idb flask-init-db deploy-dev deploy-qa
+.PHONY: init init-from-template run hooks seed test check cfn-lint ldb migrate idb flask-deploy-dev deploy-dev
 
 PYTHON=poetry run
 
@@ -31,21 +31,28 @@ cfn-lint:
 	npm run sls-package
 	cfn-lint
 
+# documentation
+doc:
+	poetry install --extras "doc"
+	$(MAKE) -C doc html
+
 # init DB
-init-db: idb
-idb: dropcreatedb flask-init-db seed
+idb: dropcreatedb migrate seed
 
 dropcreatedb:
 	dropdb TEMPLATE --if-exists
 	createdb TEMPLATE
 
-flask-init-db:
-	flask init-db
+migrate:
+	flask db upgrade
 
-deploy-qa:
-	sls deploy --stage qa
-	sls --stage qa $(FLASK_MIGRATE_UPGRADE)
+deploy-dev:
+	sls deploy --stage dev
+	sls --stage dev invoke -f migrate
+
+seed-dev: deploy-dev
+	sls --stage dev invoke -f seed
 
 deploy-prd:
 	sls deploy --stage prd
-	sls --stage prd $(FLASK_MIGRATE_UPGRADE)
+	sls --stage prd invoke -f migrate

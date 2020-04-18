@@ -3,8 +3,9 @@ from TEMPLATE.config import check_valid
 
 
 def test_config():
-    app = create_app(dict(TESTING=True))
+    app = create_app(test_config=dict(TESTING=True))
     assert check_valid(app.config), "app config check failed"
+    assert app.config["TESTING"]
 
 
 def test_db(db_session):
