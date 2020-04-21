@@ -39,7 +39,7 @@ class Config:
     OPENAPI_JSON_PATH = "openapi.json"
     OPENAPI_REDOC_PATH = "/doc"
     OPENAPI_SWAGGER_UI_PATH = "/swagger"
-    OPENAPI_SWAGGER_UI_VERSION = "3.24.2"  # https://cdnjs.com/libraries/swagger-ui
+    OPENAPI_SWAGGER_UI_URL = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.24.2/"
     # https://swagger.io/docs/specification/authentication/bearer-authentication/
     API_SPEC_OPTIONS = {
         "components": {

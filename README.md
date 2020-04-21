@@ -36,8 +36,10 @@ npm i -g serverless
 ```
 npx sls install --url https://github.com/jetbridge/sls-flask --name myapp
 cd myapp
-make init  # install dependencies and initialize project
+make init  # install dependencies and initialize project, database
 ```
+
+## Useful Commands:
 
 ### Python Virtual Environment:
 
@@ -58,7 +60,7 @@ sls wsgi serve  # run flask dev server under serverless
 ### Database:
 Using Postgresql.
 ```
-createdb TEMPLATE
+createdb TEMPLATE  # create DB
 flask db upgrade  # run migrations
 flask seed  # populate with sample data
 flask db migrate  # generate new migration

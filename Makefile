@@ -6,8 +6,6 @@ init: init-from-template hooks
 
 init-from-template:
 	@bash script/initialize_project.sh
-	git init
-	npm install
 
 run:
 	FLASK_ENV=development $(PYTHON) flask run --reload
